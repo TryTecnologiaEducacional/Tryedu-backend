@@ -1,0 +1,34 @@
+<?php
+/*
+ * Configurações de acesso ao banco de dados
+ */
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Credentials: true");
+
+define('DRIVER','mysql'); // Servidor de Banco de Dados
+define('SERVIDOR','localhost'); // Servidor de Banco de Dados
+define('USUARIO','teentok_teste');  // Usuário de acesso
+define('SENHA','7?#RI9fy-5_t');  // Senha de acesso
+define('BANCO','teentok_teste'); // Banco
+define('OPCOES',array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => TRUE,PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")); // Opções do Driver
+
+define('ArqLog','_private/arquivo.log');
+
+define('raiz_site','/var/www/html/apiteste/');
+
+//url da imagem deve ser: ImageUpload/NomeTabela/NomeArquivoComId.xxx
+define('UrlUpload',raiz_site . 'ImageUpload');
+
+//variável "pimenta" para criptografar senhas
+define('pimenta',md5('TryEdu2021'));
+
+//url da api usada
+//define('UrlAPI', 'https://api.teentok.com.br/'); //para produção
+define('UrlAPI', 'https://apiteste.teentok.com.br/'); //para testes
+
+// Função autoload para carga automática de Classes
+spl_autoload_register(function($classe) {
+  include_once("classes/{$classe}.class.php");
+});
+?>
