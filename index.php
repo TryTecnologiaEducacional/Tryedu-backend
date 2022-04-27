@@ -167,7 +167,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             }
             array_push($resp,$tmp);
           }
-          if (!$resp) $resp['mensage'] = 'erro';
+          $resp['mensage'] = ($resp)? 'sucesso' : 'erro';
           break;
         case 'consulta':
           $resp = array();
@@ -201,11 +201,9 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           }
           break;
         case 'delete':
-          // URL: https://juanamaral.com.br/tryedu/?t=NomeTabela&a=delete&Token=AbCd&chave=123
-          $resp['mensage'] = ($ObjBd->excluir($chave) > 0)? 'Registro exluído com sucesso!' : 'erro';
+          $resp['mensage'] = ($ObjBd->excluir($chave) > 0)? 'Registro exluído com sucesso!' : 'erro ao excluir registro';
           break;
         case 'create':
-          // URL: https://juanamaral.com.br/tryedu/?t=User&a=create&Token=AAAAAA&Campo1=asdfasdfasd&Campo2=asdfasd
           $ObjBd = new $tabela;
           $qtd = 0;
           if(isset($_POST['idUser']) && !in_array('idUser',$ObjBd->campos())) unset($_POST['idUser']);
@@ -232,7 +230,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               }
               $resp['mensage'] = 'dados criados com sucesso';
             } else {
-              $resp['mensage'] = 'erro ao inserir dados' . json_encode($_POST);
+              $resp['mensage'] = 'erro ao inserir dados';
             }
           }else{
             /* if(stristr($tabela, 'Answers') && !stristr($tabela, 'Options') && isset($_POST['Score'])){
@@ -243,7 +241,6 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           }
           break;
         case 'deslogar':
-          // https://juanamaral.com.br/tryedu/?t=User&Token=AAAAAA&chave=000&a=deslogar&email=asdf@asdf
           session_destroy();
           setcookie("User[$idUser]", NULL);
           $dados['Logged'] = 0;
@@ -284,7 +281,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             */
             $resp['mensage'] = ($ObjBd->atualizar($chave,$_POST) >0)? 'Dados atualizados com sucesso!' : 'erro ao atualizar.';
           } else {
-            $resp['mensage'] = "Erro na api";
+            $resp['mensage'] = "Erro ao atualizar.";
           }
           if($_FILES['image']) {
 
@@ -305,7 +302,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
     if($idUser){
       $tabUser = new User();
       $rs = $tabUser->listarPorChave($idUser);
-      $resp['mensage'] = 'erro - Token incorreto. $rs: ' . $rs->Token . " POST: " . $Token;
+      $resp['mensage'] = 'erro - Token incorreto.';
       $dados['Logged'] = 0;
       $dados['Token'] = null;
       $ok = $tabUser->logged($idUser, $dados);
@@ -316,7 +313,6 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
 }else{//não logado/conectado
   switch ($acao) {
     case 'login':
-      // https://juanamaral.com.br/tryedu/?Email=usiel@usiel.com&Password=f5bb0c8de146c67b44babbf4e6584cc0&a=login
       if(isset($_POST[$campoLogin]) && isset($_POST['Password'])){
         $ObjUser = new User();
         $filtro = "$tabela.$campoLogin = '".$_POST[$campoLogin]."'";
@@ -341,12 +337,11 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
       break;
     
     case 'verificaEmail':
-      // https://juanamaral.com.br/tryedu/?chave=000&t=User&a=verificaEmail
       // valchavea o endereço de email
       $rs = $ObjBd->listar("$ObjBd->chavePrimaria = $chave");
       if($rs->rowcount()){
         $dados['verification'] = 1;
-        $resp['mensage'] = ($ObjBd->atualizar($chave,$dados) > 0)? 'Conta criada, acesse seu e-mail e clique no link de confirmação. A mensagem pode estar na caixa de spam.' : 'erro';
+        $resp['mensage'] = ($ObjBd->atualizar($chave,$dados) > 0)? 'Conta criada com sucesso, acesse seu e-mail e clique no link de confirmação. A mensagem pode estar na caixa de spam.' : 'erro';
       }else{
         $resp['mensage'] = 'Usuário inexistente.';
       }
