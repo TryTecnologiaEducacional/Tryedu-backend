@@ -53,7 +53,7 @@ class Seguranca {
       // inicia e destrói sessão para limpá-la
       session_start();
       session_destroy();
-      setcookie("User[$idUser]", NULL);
+      //setcookie("User[$idUser]", NULL);
     }
 
     if($idUser) {

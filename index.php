@@ -147,7 +147,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           $ObjAnswers = new $tabResposta;
           while($rs = $reg->fetchObject()){
             foreach ($rs as $key => $value) {
-              $tmp[$key] = $value;
+              $tmp[$key] = (strpos(strtolower($ObjBd->tipoCampo($key)),'int'))? (int)$value : $value;
               if($key == 'DateRelease'){
                 $tmp['Bloqueada'] = ($value > date('Y-m-d'))? true : false;
               }
@@ -167,12 +167,12 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             }
             array_push($resp,$tmp);
           }
-          $resp['mensage'] = ($resp)? 'sucesso' : 'erro';
+          if ($resp) array_push($resp, ['mensage' => 'sucesso']); else array_push($resp, ['mensage' => 'erro']);
           break;
         case 'consulta':
           $resp = array();
           $ObjBd = new $tabela;
-          if(isset($_POST['idUser']) && !in_array($ObjBd->campos(), 'idUser')) unset($_POST['idUser']);
+          if(isset($_POST['idUser']) && !in_array('idUser', $ObjBd->campos())) unset($_POST['idUser']);
           if($chave){
             $f = "`$ObjBd->tabela`.`$ObjBd->chavePrimaria` = $chave";
           }else{
