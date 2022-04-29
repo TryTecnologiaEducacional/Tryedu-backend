@@ -83,7 +83,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
 
             case 'PlanosDeAulaQuestions': //questões das jornadas do professor responder
               $tabResposta = 'PlanosDeAulaAnswers';
-              $sql = "SELECT * FROM `PlanosDeAulaQuestions` WHERE `id` NOT IN (SELECT `idQuestions` as id FROM `PlanosDeAulaAnswers` WHERE `PlanosDeAulaAnswers`.`idUser` = $idUser) AND $filtro LIMIT 1";
+              $sql = "SELECT * FROM `PlanosDeAulaQuestions` WHERE `PlanosDeAulaQuestions`.`Active` = TRUE AND `id` NOT IN (SELECT `idQuestions` as id FROM `PlanosDeAulaAnswers` WHERE `PlanosDeAulaAnswers`.`idUser` = $idUser) AND $filtro LIMIT 1";
               break;
               
             default:
@@ -92,6 +92,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           }
           $ObjAnswers = new $tabResposta;
           if(!$filtro) $filtro = "idUser = $idUser";
+          if(!strpos($filtro, 'Active')) $filtro .= " AND $tabela.Active = TRUE ";
           $reg = ($sql)? $ObjAnswers->query($sql) : $ObjAnswers->consultar($filtro);
           if($reg->rowCount() > 0){
             $rs = $reg->fetchObject();
