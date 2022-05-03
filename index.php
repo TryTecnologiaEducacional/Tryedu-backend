@@ -99,14 +99,13 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             foreach ($rs as $key => $value) {
               $tmp[$key] = $value;
             }
-            $tmp['mensage'] = "sucesso";
             $ObjQuestions = new $tabela;
             $tmp['Percent'] = $ObjQuestions->percentRespondidas($tabResposta,$filtro,$idUser);
             array_push($resp,$tmp);
-          }
-          if(!$resp){
-            $tmp['mensage'] = 'Nenhuma questão disponível ou todas já estão respondidas.';
+            $resp['mensage'] = "returno com sucesso";
+          }else{
             array_push($resp,$tmp);
+            $resp['mensage'] = 'Nenhuma questão disponível ou todas já respondidas.';
           }
         break;
         case 'consultaComResposta':
@@ -200,6 +199,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             }
             array_push($resp,$tmp);
           }
+          array_push($resp,['mensage' => 'retorno sucesso']);
           break;
         case 'delete':
           $resp['mensage'] = ($ObjBd->excluir($chave) > 0)? 'Registro exluído com sucesso!' : 'erro ao excluir registro';
