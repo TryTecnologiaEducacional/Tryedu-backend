@@ -6,11 +6,14 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
 
+$banco = (strstr($_SERVER['HTTP_HOST'], 'teste'))? 'teentok_teste' : 'teentok_producao';
+$usuario = (strstr($_SERVER['HTTP_HOST'], 'teste'))? 'teentok_teste' : 'teentok_producao';
+
 define('DRIVER','mysql'); // Servidor de Banco de Dados
 define('SERVIDOR','localhost'); // Servidor de Banco de Dados
-define('USUARIO','teentok_teste');  // Usuário de acesso
+define('BANCO',$banco); // Banco
+define('USUARIO',$usuario);  // Usuário de acesso
 define('SENHA','7?#RI9fy-5_t');  // Senha de acesso
-define('BANCO','teentok_teste'); // Banco
 define('OPCOES',array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => TRUE,PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")); // Opções do Driver
 
 define('ArqLog','_private/arquivo.log');
