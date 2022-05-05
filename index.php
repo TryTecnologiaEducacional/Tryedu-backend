@@ -361,8 +361,8 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
         if(isset($_POST['FamilyCode']) && ($_POST['FamilyCode'] == 'undefined' || is_null($_POST['FamilyCode']))) unset($_POST['FamilyCode']);
         switch ($tabela) {
           case 'User':
-            $filtro = "$tabela.$campoLogin = '" . $_POST[$campoLogin] . "'";
-            $msgErro = "Usuário já Cadastrado";
+            $filtro = "$tabela.NickName = '" . $_POST['NickName'] . "' OR $tabela.Email = '" . $_POST['Email'] . "'";
+            $msgErro = "Usuário já cadastrado anteiormente.";
             break;
           
           case 'Schools':
@@ -397,7 +397,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             $resp['mensage'] = 'Cadastro realizado com sucesso.';
             if (isset($_POST['FamilyCode'])) $resp['FamilyCode'] = $_POST['FamilyCode'];
           } else {
-            $resp['mensage'] = "Erro ao inserir dados (User|School) ";
+            $resp['mensage'] = "Nickname ou e-mail já cadastrado anteriormente.";
           }
         }
       }else{
