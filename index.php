@@ -172,7 +172,8 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
         case 'consulta':
           $resp = array();
           $ObjBd = new $tabela;
-          if(isset($_POST['idUser']) && !in_array('idUser', $ObjBd->campos())) unset($_POST['idUser']);
+          //if(isset($_POST['idUser']) && !in_array('idUser', $ObjBd->campos())) unset($_POST['idUser']);
+          unset($_POST['idUser']);
           if($chave){
             $f = "`$ObjBd->tabela`.`$ObjBd->chavePrimaria` = $chave";
           }else{
@@ -199,7 +200,8 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             }
             array_push($resp,$tmp);
           }
-          array_push($resp,['mensage' => 'retorno sucesso']);
+          $msg = ($resp)? 'retorno sucesso' : "Nenhum registro encontrado" ;
+          array_push($resp,['mensage' => $msg]);
           break;
         case 'delete':
           $resp['mensage'] = ($ObjBd->excluir($chave) > 0)? 'Registro exluído com sucesso!' : 'erro ao excluir registro';
