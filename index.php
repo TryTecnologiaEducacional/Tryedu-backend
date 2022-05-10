@@ -329,13 +329,13 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
 
             $resp = $_SESSION;
             //$resp = json_decode($_COOKIE['User'][$rs->id], true);
-            $resp['mensage'] = 'login realizado com sucesso.';
+            $resp['mensage'] = 'Login realizado com sucesso.';
           
           }else{
-            $resp['mensage'] = 'erro ao tentar logar.';
+            $resp['mensage'] = 'Login e/ou senha incorreto(s).';
           }
       }else {
-        $resp['mensage'] = 'Usuário/E-mail e/ou senha não recebido(s).';  
+        $resp['mensage'] = 'Login e/ou senha não recebido(s).';  
       }
       break;
     
@@ -351,7 +351,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
       break;
     
     case 'deslogar':
-      $resp['mensage'] = 'Este usuário não está logado.';
+      array_push($resp, ['mensage' => 'Este usuário não está logado. Sucesso']);
       break;
 
     case 'register': ////register = para cadastros de User ou School ou outro
