@@ -204,7 +204,8 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           array_push($resp,['mensage' => $msg]);
           break;
         case 'delete':
-          $resp['mensage'] = ($ObjBd->excluir($chave) > 0)? 'Registro exluído com sucesso!' : 'erro ao excluir registro';
+          $msg = ($ObjBd->excluir($chave) > 0)? 'Registro exluído com sucesso!' : 'erro ao excluir registro';
+          array_push($resp, ['mensage' => $msg]);
           break;
         case 'create':
           $ObjBd = new $tabela;
