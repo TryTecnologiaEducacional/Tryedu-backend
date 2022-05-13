@@ -1,9 +1,10 @@
 <?php
-include_once('_private/config.inc.php');
-
 session_start();
 
-$resp = null;
+include_once('_private/config.inc.php');
+
+
+$resp = [];
 
 $chave = 0;
 if(isset($_POST['chave'])){
@@ -54,7 +55,10 @@ $UserSession = json_decode($_COOKIE['User'][$idUser], true);
   //não funcionou em cada requisição vinda do app, vem como se fosse a 1ª requisição
 
 $Token = null;
-if (isset($_POST['Token'])) $Token = $_POST['Token']; unset($_POST['Token']);
+if (isset($_POST['Token'])) {
+  $Token = $_POST['Token'];
+  unset($_POST['Token']);
+}
 
 if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaConectado($idUser)) || ($tabela == 'AccessLevel' && $acao == 'consulta')){
   //conectado/logado
