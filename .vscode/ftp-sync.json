@@ -1,8 +1,8 @@
 {
     "remotePath": "/www/apiteste/",
-    "host": "teentok.com.br",
-    "username": "teentok",
-    "password": "TryGame2021",
+    "host": "teentok.app.br",
+    "username": "teentokapp",
+    "password": "trygame@2021",
     "port": 21,
     "secure": false,
     "protocol": "ftp",

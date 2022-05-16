@@ -6,8 +6,8 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
 
-$banco = (strstr($_SERVER['HTTP_HOST'], 'teste'))? 'teentok_teste' : 'teentok_producao';
-$usuario = (strstr($_SERVER['HTTP_HOST'], 'teste'))? 'teentok_teste' : 'teentok_producao';
+$banco = (strstr($_SERVER['HTTP_HOST'], 'teste'))? 'teentokapp_teste' : 'teentokapp_producao';
+$usuario = (strstr($_SERVER['HTTP_HOST'], 'teste'))? 'teentokapp_teste' : 'teentokapp_producao';
 
 define('DRIVER','mysql'); // Servidor de Banco de Dados
 define('SERVIDOR','localhost'); // Servidor de Banco de Dados
@@ -18,7 +18,8 @@ define('OPCOES',array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => TRUE,PDO::MYSQL_ATTR
 
 define('ArqLog','_private/arquivo.log');
 
-define('raiz_site','/var/www/html/apiteste/');
+//define('raiz_site','/var/www/html/apiteste/');
+define('raiz_site','/home/teentokapp/www/apiteste/');
 
 //url da imagem deve ser: ImageUpload/NomeTabela/NomeArquivoComId.xxx
 define('UrlUpload',raiz_site . 'ImageUpload');
@@ -28,7 +29,7 @@ define('pimenta',md5('TryEdu2021'));
 
 //url da api usada
 //define('UrlAPI', 'https://api.teentok.com.br/'); //para produção
-define('UrlAPI', 'https://apiteste.teentok.com.br/'); //para testes
+define('UrlAPI', 'https://apiteste.teentokapp.com.br/'); //para testes
 
 // Função autoload para carga automática de Classes
 spl_autoload_register(function($classe) {
