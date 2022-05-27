@@ -2,23 +2,33 @@
 /*
  * Configurações de acesso ao banco de dados
  */
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: HEAD, GET, POST, PUT, PATCH, DELETE");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-$bancoUser = (strstr($_SERVER['HTTP_HOST'], 'teste'))? 'teentok_teste' : 'teentok_producao';
-
+if(strstr($_SERVER['HTTP_HOST'], 'teste')){
+  $bancoUser = 'teentok_teste';
+  $raiz_site = '/usr/share/nginx/html/apiteste/';
+  $UrlAPI = 'https://apiteste.teentokapp.com.br/';
+} else {
+  $bancoUser = 'teentok_producao';
+  $raiz_site = '/usr/share/nginx/html/api/';
+  $UrlAPI = 'https://api.teentokapp.com.br/';
+}
 define('DRIVER','mysql'); // Servidor de Banco de Dados
 define('SERVIDOR','teentok.czpyv0z0unpu.sa-east-1.rds.amazonaws.com'); // Servidor de Banco de Dados
 define('BANCO',$bancoUser); // Banco
-define('USUARIO',$bancoUser);  // Usuário de acesso
-define('SENHA','7?#RI9fy-5_t');  // Senha de acesso
-define('OPCOES',array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => TRUE,PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")); // Opções do Driver
+define('USUARIO','bduser');  // Usuário de acesso
+define('SENHA','TryGame[2022');  // Senha de acesso
+define('PORTABD','3306');  // Porta de acesso
+//define('SSLCA','/root/.ssh/teentokKey.pem'); //key SSL amazon
+define('OPCOES',array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => TRUE,PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4")); // Opções do Driver
 
 define('ArqLog','_private/arquivo.log');
 
 //define('raiz_site','/var/www/html/apiteste/');
-define('raiz_site','/home/teentokapp/www/apiteste/');
+define('raiz_site',$raiz_site);
 
 //url da imagem deve ser: ImageUpload/NomeTabela/NomeArquivoComId.xxx
 define('UrlUpload',raiz_site . 'ImageUpload');
@@ -27,8 +37,7 @@ define('UrlUpload',raiz_site . 'ImageUpload');
 define('pimenta',md5('TryEdu2021'));
 
 //url da api usada
-//define('UrlAPI', 'https://api.teentok.com.br/'); //para produção
-define('UrlAPI', 'https://apiteste.teentokapp.com.br/'); //para testes
+define('UrlAPI', $UrlAPI);
 
 // Função autoload para carga automática de Classes
 spl_autoload_register(function($classe) {

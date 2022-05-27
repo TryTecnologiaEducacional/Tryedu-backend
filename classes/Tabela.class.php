@@ -30,35 +30,23 @@ abstract Class Tabela {
    */
   public function __construct() {
 
-    // Recuperando array com configuração de acesso
-    //global $bdconfig;
-
-    // Testando se já está definido atributo estático
-    // $conexao. Se não estiver, então realiza a conexão
-    // (se já estiver... não precisa fazer de novo)
-    //if (!isset(self::$conexao) || $dsn == null || !isset($dsn)) {
       // Montando Data Source Name no formato: "mysql:host=localhost;dbname=banco";
-      $dsn = DRIVER.":host=".SERVIDOR.";dbname=".BANCO;
+      $dsn = DRIVER.':host='.SERVIDOR.';port='.PORTABD.';dbname='.BANCO;
 
-      // Usando tratamento de exceção para capturar possível erro
       try{
         // Realizando conexão e armazenando em constante
         self::$conexao = new PDO($dsn, USUARIO, SENHA, OPCOES);
       } catch (PDOException $e) {
-
-        // Montando mensagem de erro
         $erro = '<h1>Erro:</h1><pre>' . $e->getMessage() . "\n" .
                 $e->getTraceAsString() . '</pre>' . "\n";
-
-        // Gravando erro no log
         error_log(date('Y-m-d H:i:s') . " - " . $erro, 3, ArqLog);
 
         // Exibindo erro para o usuário e encerrando script ** cuidado
-        //die($erro);
+        //die("DSN: $dsn<br> ".USUARIO ."<br>". SENHA ."<BR>". $erro);
       }
     //}
 
-  } // function __construct
+  } // término function __construct
 
   /*
    * Método mágico __get

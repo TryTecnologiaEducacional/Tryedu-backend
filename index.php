@@ -51,8 +51,8 @@ $resp['tabela'] = $tabela;
 $resp['ação'] = $acao;
 $resp['idUser'] = $idUser;
 
-$UserSession = json_decode($_COOKIE['User'][$idUser], true);
-  //não funcionou em cada requisição vinda do app, vem como se fosse a 1ª requisição
+//$UserSession = json_decode($_COOKIE['User'][$idUser], true);
+  //não funcionou, em cada requisição vinda do app, vem como se fosse a 1ª requisição
 
 $Token = null;
 if (isset($_POST['Token'])) {
@@ -426,6 +426,9 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
   
 $retorno = is_null($resp)? $UserSession : $retorno = $resp;
 
-echo json_encode($retorno, JSON_UNESCAPED_UNICODE);
-
+if (is_null($resp) && is_null($UserSession)) {
+  echo "<b>Cuidado!<\b><br><p>Você não tem permissão para estar aqui.<\p>";
+} else {
+  echo json_encode($retorno, JSON_UNESCAPED_UNICODE);
+}
 ?>

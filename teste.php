@@ -3,15 +3,9 @@ session_start();
 
 include_once('_private/config.inc.php');
 
-$resp = [];
-array_push($resp, ['mensage' => "Teste session<hr>"]);
+echo "Testse apiteste teentok.<br>Raiz site: ".raiz_site."<hr>";
 
-if ($_SESSION['Token'] == $_POST['Token']){
-    array_push($resp, ['Teste' => 'Token Ok']);
-} else {
-    array_push($resp, ['Tk Session:' => $_SESSION['Token']]);
-    array_push($resp, ['Tk POST:' => $_POST['Token']]);
-    $_SESSION['Token'] = $_POST['Token'];
-}
+$Obj = new User();
+$reg = $Obj->listar();
 
-echo json_encode($resp, JSON_UNESCAPED_UNICODE);
+echo "Obj ok.<br>";
