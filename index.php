@@ -126,14 +126,10 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               $tabResposta = 'JourneysAnswers';
               break;
 
-            case 'PlanosDeAulaQuestions': //questões das jornadas do professor responder
+            case 'PlanosDeAulaQuestions' || 'PlanosDeAulaCategories': //questões das jornadas do professor responder
               $tabResposta = 'PlanosDeAulaAnswers';
               break;
             case 'PlanosDeAula':
-              /* $sql = "SELECT `PlanosDeAula`.*, COUNT(`PlanosDeAulaQuestions`.id) AS QtQuestions FROM `PlanosDeAula`
-                LEFT JOIN `PlanosDeAulaQuestions` ON `PlanosDeAulaQuestions`.`idCategoryPlano` = `PlanosDeAula`.`id` ";
-              if($filtro) $sql .= $filtro;
-              $sql .= " GROUP BY `PlanosDeAula`.`id`"; */ // não usado
               $tabResposta = 'PlanosDeAulaAnswers';
               $ObjQuestions = new PlanosDeAulaQuestions();
               break;
@@ -145,8 +141,10 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           $f = ($chave >0)? " `$ObjBd->tabela`.`$ObjBd->chavePrimaria` = $chave "  : null;
           if($f && $filtro) $filtro .= $f;
           if($f && !$filtro) $filtro = $f;
-          if ($filtro) $filtro .= " AND ";
-          $filtro .= "$tabela.Active = true";
+          if(in_array('Active',$ObjBd->campos())) {
+            if ($filtro) $filtro .= " AND ";  
+            $filtro .= "$tabela.Active = true";
+          }
           $reg = $ObjBd->consultar($filtro, $ordem);
           $ObjAnswers = new $tabResposta;
           while($rs = $reg->fetchObject()){
@@ -159,10 +157,19 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             if($tabela == 'PlanosDeAula'){
               $f = "PlanosDeAulaQuestions.idCategoryPlano = $rs->id";
               $tmp['QtQuestions'] = $ObjQuestions->listarQuantidade($f);
-              //$sql = "SELECT count(`id`) as QtAnswers FROM `PlanosDeAulaQuestions` WHERE $f AND `id` IN (SELECT `idQuestions` as id FROM `PlanosDeAulaAnswers` WHERE `PlanosDeAulaAnswers`.`idUser` = $idUser)";
               $sql = "SELECT COUNT(`PlanosDeAulaAnswers`.`id`) AS QtAnswers FROM `PlanosDeAulaAnswers` LEFT JOIN `PlanosDeAulaQuestions` ON `PlanosDeAulaQuestions`.`id` = `PlanosDeAulaAnswers`.`idQuestions` LEFT JOIN `User` ON `User`.`id` = `PlanosDeAulaAnswers`.`idUser` LEFT JOIN `PlanosDeAulaAnswersOptions` ON `PlanosDeAulaAnswers`.`idAnswersOptions` = `PlanosDeAulaAnswersOptions`.`id` WHERE `PlanosDeAulaQuestions`.`idCategoryPlano` = $rs->id AND PlanosDeAulaAnswers.idUser = $idUser;";
               $regA = $ObjQuestions->query($sql);
               $tmp['QtAnswers'] = (int)$regA->fetchObject()->QtAnswers;
+            }elseif($tabela == 'PlanosDeAulaCategories'){
+              $ObjTmp = new $tabela;
+              $sql = "SELECT count(SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1)) as acertos FROM `PlanosDeAulaQuestions` INNER JOIN `PlanosDeAula` ON `PlanosDeAula`.id = `PlanosDeAulaQuestions`.`idCategoryPlano` INNER JOIN `PlanosDeAulaCategories` ON `PlanosDeAulaCategories`.`id` = `PlanosDeAula`.`idCategories` WHERE SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1) IN (SELECT `Answer` FROM `PlanosDeAulaAnswers`) AND `PlanosDeAulaCategories`.`id` = $rs->id AND $filtro; ";
+              $regQ = $ObjTmp->query($sql);
+              $tmp['acertos'] = (int)$regQ->fetchObject()->acertos;
+
+              $sql = "SELECT count(SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1)) as erros FROM `PlanosDeAulaQuestions` INNER JOIN `PlanosDeAula` ON `PlanosDeAula`.id = `PlanosDeAulaQuestions`.`idCategoryPlano` INNER JOIN `PlanosDeAulaCategories` ON `PlanosDeAulaCategories`.`id` = `PlanosDeAula`.`idCategories` WHERE SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1) NOT IN (SELECT `Answer` FROM `PlanosDeAulaAnswers` WHERE `Answer` IS NOT NULL) AND `PlanosDeAulaCategories`.`id` = $rs->id AND $filtro;";
+              $regA = $ObjAnswers->query($sql);
+              $tmp['erros'] = (int)$regA->fetchObject()->erros;
+              // ainda falta contemplar a tabela Options
             }else{
               $f = " $tabResposta.idQuestions = $rs->id";
               $f .= ($filtroNaResposta)? " AND $filtroNaResposta" : " AND $tabResposta.idUser = $idUser";
