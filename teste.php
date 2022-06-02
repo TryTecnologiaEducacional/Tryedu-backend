@@ -169,7 +169,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               $sql = "SELECT count(SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1)) as erros FROM `PlanosDeAulaQuestions` INNER JOIN `PlanosDeAula` ON `PlanosDeAula`.id = `PlanosDeAulaQuestions`.`idCategoryPlano` INNER JOIN `PlanosDeAulaCategories` ON `PlanosDeAulaCategories`.`id` = `PlanosDeAula`.`idCategories` WHERE SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1) NOT IN (SELECT `Answer` FROM `PlanosDeAulaAnswers` WHERE `Answer` IS NOT NULL) AND `PlanosDeAulaCategories`.`id` = $rs->id AND $filtro;";
               $regA = $ObjAnswers->query($sql);
               $tmp['erros'] = (int)$regA->fetchObject()->erros;
-
+              // ainda falta contemplar a tabela Options
             }else{
               $f = " $tabResposta.idQuestions = $rs->id";
               $f .= ($filtroNaResposta)? " AND $filtroNaResposta" : " AND $tabResposta.idUser = $idUser";
@@ -182,7 +182,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           break;
         case 'consulta':
           $resp = array();
-          $ObjBd = new $tabela;
+          /* $ObjBd = new $tabela;
           //if(isset($_POST['idUser']) && !in_array('idUser', $ObjBd->campos())) unset($_POST['idUser']);
           unset($_POST['idUser']);
           if($chave){
@@ -210,7 +210,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               }
             }
             array_push($resp,$tmp);
-          }
+          } */
           $msg = ($resp)? 'retorno sucesso' : "Nenhum registro encontrado" ;
           array_push($resp,['mensage' => $msg]);
           break;
