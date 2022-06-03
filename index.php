@@ -131,7 +131,6 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               break;
             case 'PlanosDeAula':
               $tabResposta = 'PlanosDeAulaAnswers';
-              $ObjQuestions = new PlanosDeAulaQuestions();
               break;
 
             default:
@@ -155,10 +154,11 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               }
             }
             if($tabela == 'PlanosDeAula'){
-              $f = "PlanosDeAulaQuestions.idCategoryPlano = $rs->id";
-              $tmp['QtQuestions'] = $ObjQuestions->listarQuantidade($f);
+              $ObjPerguntas = new PlanosDeAulaQuestions();
+              $f = "`PlanosDeAulaQuestions`.`idCategoryPlano` = $rs->id";
+              $tmp['QtQuestions'] = (int)$ObjPerguntas->listarQuantidade($f);
               $sql = "SELECT COUNT(`PlanosDeAulaAnswers`.`id`) AS QtAnswers FROM `PlanosDeAulaAnswers` LEFT JOIN `PlanosDeAulaQuestions` ON `PlanosDeAulaQuestions`.`id` = `PlanosDeAulaAnswers`.`idQuestions` LEFT JOIN `User` ON `User`.`id` = `PlanosDeAulaAnswers`.`idUser` LEFT JOIN `PlanosDeAulaAnswersOptions` ON `PlanosDeAulaAnswers`.`idAnswersOptions` = `PlanosDeAulaAnswersOptions`.`id` WHERE `PlanosDeAulaQuestions`.`idCategoryPlano` = $rs->id AND PlanosDeAulaAnswers.idUser = $idUser;";
-              $regA = $ObjQuestions->query($sql);
+              $regA = $ObjPerguntas->query($sql);
               $tmp['QtAnswers'] = (int)$regA->fetchObject()->QtAnswers;
             }elseif($tabela == 'PlanosDeAulaCategories'){
               $ObjTmp = new $tabela;
