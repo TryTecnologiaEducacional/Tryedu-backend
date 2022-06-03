@@ -219,6 +219,9 @@ public function consultar($filtro=null, $ordem=null, $limite=null,$grupo=null,$a
     case 'PlanosDeAulaAnswers':
       $sql = "SELECT `PlanosDeAulaAnswers`.*, `PlanosDeAulaAnswersOptions`.`Text`, `PlanosDeAulaAnswersOptions`.`Emotion`, `PlanosDeAulaQuestions`.`QuestionTitle`, `User`.`NickName`, `PlanosDeAulaQuestions`.`idCategoryPlano` FROM `PlanosDeAulaAnswers` LEFT JOIN `PlanosDeAulaQuestions` ON `PlanosDeAulaQuestions`.`id` = `PlanosDeAulaAnswers`.`idQuestions` LEFT JOIN `User` ON `User`.`id` = `PlanosDeAulaAnswers`.`idUser` LEFT JOIN `PlanosDeAulaAnswersOptions` ON `PlanosDeAulaAnswers`.`idAnswersOptions` = `PlanosDeAulaAnswersOptions`.`id` ";
       break;
+    case 'HistoryDialoguesAnswers':
+      $sql = "SELECT `HistoryDialoguesAnswers`.*, `HistoryDialoguesOptions`.`idDialogues`, `HistoryDialoguesOptions`.`NameTags`, `HistoryDialoguesOptions`.`Expression`, `HistoryDialoguesOptions`.`Order` FROM `HistoryDialoguesAnswers` LEFT JOIN `HistoryDialoguesOptions` ON `HistoryDialoguesOptions`.`id` = `HistoryDialoguesAnswers`.`idOptions`";
+      break;
     default:
       $sql = "SELECT ".$this->tabela.".* FROM " . $this->tabela;
     break;

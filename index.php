@@ -188,7 +188,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           if($chave){
             $f = "`$ObjBd->tabela`.`$ObjBd->chavePrimaria` = $chave";
           }else{
-            if(isset($filtro)){
+            if($filtro){
               $f = $filtro;
             }elseif(count($_POST) >0){
               foreach ($_POST as $key => $value) {
@@ -199,7 +199,10 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               $f .= '0=0';
             }else{$f = NULL;}
           }
-          $reg = $ObjBd->consultar($f);
+          if ($f == 'UserTags'){
+            $sql = "SELECT `HistoryDialoguesAnswers`.`idUser`, `HistoryDialoguesOptions`.`NameTags` FROM `HistoryDialoguesAnswers` INNER JOIN `HistoryDialoguesOptions` on `HistoryDialoguesOptions`.`id` = `HistoryDialoguesAnswers`.`idOptions` GROUP BY idUser, NameTags";
+            $reg = $ObjBd->query($sql);
+          } else $reg = $ObjBd->consultar($f);
 
           $tmp = array();
           while($rs = $reg->fetchObject()){
