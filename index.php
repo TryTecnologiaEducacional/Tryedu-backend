@@ -117,6 +117,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           $resp = [];
           $tmp = [];
           $ObjBd = new $tabela;
+          $sql = null;
           switch ($tabela) {
             case 'Questions': //questões das missões do aluno
               $tabResposta = 'Answers';
@@ -132,6 +133,12 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             case 'PlanosDeAula':
               $tabResposta = 'PlanosDeAulaAnswers';
               break;
+            case 'HistoryDialogues':
+              $sql = "SELECT `HistoryDialogues`.*,`HistoryDialoguesAnswers`.`idOptions`,`HistoryDialoguesAnswers`.`idUser`,`HistoryDialoguesAnswers`.`Score`,`HistoryDialoguesAnswers`.`Text` as Answer FROM `HistoryDialogues` LEFT JOIN `HistoryDialoguesOptions` ON `HistoryDialoguesOptions`.`idDialogues` = `HistoryDialogues`.`id` LEFT JOIN `HistoryDialoguesAnswers` ON `HistoryDialoguesAnswers`.`idOptions` = `HistoryDialoguesOptions`.`id` AND `HistoryDialoguesAnswers`.`idUser` = $idUser";
+              if(isset($ordem)) $sql .= "ORDER BY $ordem";
+              $tabOptions = 'HistoryDialoguesOptions';
+              $tabResposta = 'HistoryDialoguesAnswers';
+              break;
 
             default:
               $tabResposta = null;
@@ -144,7 +151,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             if ($filtro) $filtro .= " AND ";  
             $filtro .= "$tabela.Active = true";
           }
-          $reg = $ObjBd->consultar($filtro, $ordem);
+          $reg = ($sql)? $ObjBd->query($sql) : $ObjBd->consultar($filtro, $ordem);
           $ObjAnswers = new $tabResposta;
           while($rs = $reg->fetchObject()){
             foreach ($rs as $key => $value) {
@@ -170,6 +177,12 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               $regA = $ObjAnswers->query($sql);
               $tmp['erros'] = (int)$regA->fetchObject()->erros;
               // ainda falta contemplar a tabela Options
+            }elseif(isset($tabOptions) && strstr($tabOptions,"Options")){
+              $ObjOptions = new $tabOptions;
+              $sql = "SELECT * FROM `HistoryDialoguesAnswers` INNER JOIN `HistoryDialoguesOptions` ON `HistoryDialoguesOptions`.`id` = `HistoryDialoguesAnswers`.`idOptions` INNER JOIN `HistoryDialogues` ON `HistoryDialogues`.`id` = `HistoryDialoguesOptions`.`idDialogues` AND `HistoryDialogues`.id = $rs->id AND `HistoryDialoguesAnswers`.`idUser` = $idUser";
+              $regO = $ObjOptions->query($sql);
+              $ra = $regO->rowCount() >0 ? true : false;
+              $tmp['Respondida'] = $ra;
             }else{
               $f = " $tabResposta.idQuestions = $rs->id";
               $f .= ($filtroNaResposta)? " AND $filtroNaResposta" : " AND $tabResposta.idUser = $idUser";
