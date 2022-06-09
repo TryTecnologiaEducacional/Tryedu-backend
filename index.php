@@ -117,7 +117,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           $resp = [];
           $tmp = [];
           $ObjBd = new $tabela;
-          $sql = null;
+          //$sql = '';
           switch ($tabela) {
             case 'Questions': //questões das missões do aluno
               $tabResposta = 'Answers';
@@ -130,12 +130,12 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             case 'PlanosDeAulaQuestions' || 'PlanosDeAulaCategories': //questões das jornadas do professor responder
               $tabResposta = 'PlanosDeAulaAnswers';
               break;
+
             case 'PlanosDeAula':
               $tabResposta = 'PlanosDeAulaAnswers';
               break;
+
             case 'HistoryDialogues':
-              $sql = "SELECT `HistoryDialogues`.*,`HistoryDialoguesAnswers`.`idOptions`,`HistoryDialoguesAnswers`.`idUser`,`HistoryDialoguesAnswers`.`Score`,`HistoryDialoguesAnswers`.`Text` as Answer FROM `HistoryDialogues` LEFT JOIN `HistoryDialoguesOptions` ON `HistoryDialoguesOptions`.`idDialogues` = `HistoryDialogues`.`id` LEFT JOIN `HistoryDialoguesAnswers` ON `HistoryDialoguesAnswers`.`idOptions` = `HistoryDialoguesOptions`.`id` AND `HistoryDialoguesAnswers`.`idUser` = $idUser";
-              if(isset($ordem)) $sql .= "ORDER BY $ordem";
               $tabOptions = 'HistoryDialoguesOptions';
               $tabResposta = 'HistoryDialoguesAnswers';
               break;
@@ -151,7 +151,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             if ($filtro) $filtro .= " AND ";  
             $filtro .= "$tabela.Active = true";
           }
-          $reg = ($sql)? $ObjBd->query($sql) : $ObjBd->consultar($filtro, $ordem);
+          $reg = $ObjBd->consultar($filtro, $ordem);
           $ObjAnswers = new $tabResposta;
           while($rs = $reg->fetchObject()){
             foreach ($rs as $key => $value) {
@@ -177,12 +177,26 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               $regA = $ObjAnswers->query($sql);
               $tmp['erros'] = (int)$regA->fetchObject()->erros;
               // ainda falta contemplar a tabela Options
-            }elseif(isset($tabOptions) && strstr($tabOptions,"Options")){
-              $ObjOptions = new $tabOptions;
-              $sql = "SELECT * FROM `HistoryDialoguesAnswers` INNER JOIN `HistoryDialoguesOptions` ON `HistoryDialoguesOptions`.`id` = `HistoryDialoguesAnswers`.`idOptions` INNER JOIN `HistoryDialogues` ON `HistoryDialogues`.`id` = `HistoryDialoguesOptions`.`idDialogues` AND `HistoryDialogues`.id = $rs->id AND `HistoryDialoguesAnswers`.`idUser` = $idUser";
-              $regO = $ObjOptions->query($sql);
-              $ra = $regO->rowCount() >0 ? true : false;
-              $tmp['Respondida'] = $ra;
+            }elseif($tabela == 'HistoryDialogues'){
+              $f = "idDialogues = ".$rs->id." AND idUser = $idUser";
+              $sql = "SELECT count(`HistoryDialoguesAnswers`.id) as QtAnswers FROM `HistoryDialoguesAnswers` LEFT JOIN `HistoryDialoguesOptions` ON `HistoryDialoguesOptions`.`id` = `HistoryDialoguesAnswers`.`idOptions` ";
+              $qt = (int)$ObjAnswers->query("$sql WHERE $f")->fetchObject()->QtAnswers;
+              $sql = "SELECT `HistoryDialoguesAnswers`.*,`HistoryDialoguesOptions`.`idDialogues` FROM `HistoryDialoguesAnswers` LEFT JOIN `HistoryDialoguesOptions` ON `HistoryDialoguesOptions`.`id` = `HistoryDialoguesAnswers`.`idOptions` ";
+              if($qt >0){
+                $regA = $ObjAnswers->query("$sql WHERE $f");
+                $rsA = $regA->fetchObject();
+                $tmp['Respondida'] = true;
+                $tmp['idOptions'] = (int)$rsA->idOptions;
+                $tmp['idUser'] = (int)$rsA->idUser;
+                $tmp['Score'] = (int)$rsA->Score;
+                $tmp['Answer'] = $rsA->Answer;
+              } else {
+                $tmp['Respondida'] = false;
+                $tmp['idOptions'] = null;
+                $tmp['idUser'] = null;
+                $tmp['Score'] = null;
+                $tmp['Answer'] = null;
+              }
             }else{
               $f = " $tabResposta.idQuestions = $rs->id";
               $f .= ($filtroNaResposta)? " AND $filtroNaResposta" : " AND $tabResposta.idUser = $idUser";
