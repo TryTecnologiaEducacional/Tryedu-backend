@@ -440,7 +440,7 @@ public function percentRespondidas($tabResposta, $filtro, $idUser){ // usar Obj 
       if(is_null($valor)){
         $sql .=  "$campo = NULL,";
       }else{
-        $valor = filter_var($valor,FILTER_SANITIZE_STRING); //retira tags do campo, proteção contra injection
+        $valor = filter_var($valor);
         $sql .= (strpos(strtolower($this->tipoCampo($campo)),'int'))? "`$campo` = $valor," : "`$campo` = '$valor',";
       }
             

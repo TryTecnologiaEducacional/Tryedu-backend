@@ -178,23 +178,27 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               $tmp['erros'] = (int)$regA->fetchObject()->erros;
               // ainda falta contemplar a tabela Options
             }elseif($tabela == 'HistoryDialogues'){
-              $f = "idDialogues = ".$rs->id." AND idUser = $idUser";
+              $fA = "idDialogues = ".$rs->id." AND idUser = $idUser";
               $sql = "SELECT count(`HistoryDialoguesAnswers`.id) as QtAnswers FROM `HistoryDialoguesAnswers` LEFT JOIN `HistoryDialoguesOptions` ON `HistoryDialoguesOptions`.`id` = `HistoryDialoguesAnswers`.`idOptions` ";
-              $qt = (int)$ObjAnswers->query("$sql WHERE $f")->fetchObject()->QtAnswers;
-              $sql = "SELECT `HistoryDialoguesAnswers`.*,`HistoryDialoguesOptions`.`idDialogues` FROM `HistoryDialoguesAnswers` LEFT JOIN `HistoryDialoguesOptions` ON `HistoryDialoguesOptions`.`id` = `HistoryDialoguesAnswers`.`idOptions` ";
+              $qt = (int)$ObjAnswers->query("$sql WHERE $fA")->fetchObject()->QtAnswers;
+              $sql = "SELECT `HistoryDialoguesAnswers`.*,`HistoryDialoguesOptions`.`idDialogues`,`HistoryDialoguesOptions`.`Expression` as ExpressionAnswer,`HistoryDialoguesAnswers`.`NameTags` as NameTagsAnswer FROM `HistoryDialoguesAnswers` LEFT JOIN `HistoryDialoguesOptions` ON `HistoryDialoguesOptions`.`id` = `HistoryDialoguesAnswers`.`idOptions` ";
               if($qt >0){
-                $regA = $ObjAnswers->query("$sql WHERE $f");
+                $regA = $ObjAnswers->query("$sql WHERE $fA");
                 $rsA = $regA->fetchObject();
                 $tmp['Respondida'] = true;
                 $tmp['idOptions'] = (int)$rsA->idOptions;
                 $tmp['idUser'] = (int)$rsA->idUser;
                 $tmp['Score'] = (int)$rsA->Score;
+                $tmp['ExpressionAnswer'] = $rsA->ExpressionAnswer;
+                $tmp['NameTagsAnswer'] = $rsA->NameTagsAnswer;
                 $tmp['Answer'] = $rsA->Answer;
               } else {
                 $tmp['Respondida'] = false;
                 $tmp['idOptions'] = null;
                 $tmp['idUser'] = null;
                 $tmp['Score'] = null;
+                $tmp['ExpressionAnswer'] = null;
+                $tmp['NameTagsAnswer'] = null;
                 $tmp['Answer'] = null;
               }
             }else{
@@ -227,7 +231,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             }else{$f = NULL;}
           }
           if ($f == 'UserTags'){
-            $sql = "SELECT `HistoryDialoguesAnswers`.`idUser`, `HistoryDialoguesOptions`.`NameTags` FROM `HistoryDialoguesAnswers` INNER JOIN `HistoryDialoguesOptions` on `HistoryDialoguesOptions`.`id` = `HistoryDialoguesAnswers`.`idOptions` GROUP BY idUser, NameTags";
+            $sql = "SELECT `idUser`,`NameTags` FROM `HistoryDialoguesAnswers` GROUP BY `idUser`,`NameTags` ";
             $reg = $ObjBd->query($sql);
           } else $reg = $ObjBd->consultar($f);
 
@@ -324,7 +328,14 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             - se o valor for = NULL, limpa os dados do campo na tabela
             - se for diferente disso, grava os dados no banco.
             */
-            $resp['mensage'] = ($ObjBd->atualizar($chave,$_POST) >0)? 'Dados atualizados com sucesso!' : 'erro ao atualizar.';
+            if($ObjBd->atualizar($chave,$_POST) >0){
+              if ($tabela == 'User'){
+                //$resp = $ObjBd->listarPorChave($chave);
+              }
+              $resp['mensage'] = 'Dados atualizados com sucesso!';
+            } else {
+              $resp['mensage'] = 'erro ao atualizar.';
+            }
           } else {
             $resp['mensage'] = "Erro ao atualizar.";
           }
