@@ -231,7 +231,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             }else{$f = NULL;}
           }
           if ($f == 'UserTags'){
-            $sql = "SELECT `idUser`,`NameTags` FROM `HistoryDialoguesAnswers` GROUP BY `idUser`,`NameTags` ";
+            $sql = "SELECT `idUser`,`NameTags` FROM `HistoryDialoguesAnswers` WHERE idUser = $idUser GROUP BY `idUser`,`NameTags`";
             $reg = $ObjBd->query($sql);
           } else $reg = $ObjBd->consultar($f);
 
@@ -328,13 +328,12 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             - se o valor for = NULL, limpa os dados do campo na tabela
             - se for diferente disso, grava os dados no banco.
             */
-            if($ObjBd->atualizar($chave,$_POST) >0){
-              if ($tabela == 'User'){
-                //$resp = $ObjBd->listarPorChave($chave);
-              }
-              $resp['mensage'] = 'Dados atualizados com sucesso!';
-            } else {
-              $resp['mensage'] = 'erro ao atualizar.';
+            if(isset($_POST['isUser']) && $tabela == 'User') unset($_POST['isUser']);
+            
+            $resp['mensage'] = ($ObjBd->atualizar($chave,$_POST) >0)? 'Dados atualizados com sucesso!' : 'erro ao atualizar.';
+            if($resp['mensage'] == 'Dados atualizados com sucesso!' && $tabela == 'User' && $chave){
+              $_SESSION = $ObjBd->listarAtual($chave);
+              $resp = $_SESSION;
             }
           } else {
             $resp['mensage'] = "Erro ao atualizar.";
