@@ -7,7 +7,11 @@ class User extends Tabela {
 														 
  public function listarAtual($idLoginAtual){
  	$resultado = $this->listar("`id` = '".$idLoginAtual."'");
-	return $resultado->fetchObject();
+   $tmp = [];
+   foreach ($resultado->fetchObject() as $key => $value) {
+     $tmp[$key] = ($key == 'Password')? '***' : $value;
+   }
+	return $tmp;
  }
 
  public function logged($id,$dados){
