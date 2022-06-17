@@ -446,13 +446,13 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           if ($tabela == 'User' && $rsAccess->AccessName == "Responsavel" || (isset($_POST['FamilyCode']) && $_POST['FamilyCode'] == 'true')){
             $_POST['FamilyCode'] = $ObjBd->GetFamilyCode();
           }
-          if ($qtd >0) {
+          if ($qtd > 0) {
             $resp['mensage'] = $msgErro;
           } elseif ((int)$ObjBd->inserir($_POST) > 0) {
             $resp['mensage'] = 'Cadastro realizado com sucesso.';
             if (isset($_POST['FamilyCode'])) $resp['FamilyCode'] = $_POST['FamilyCode'];
           } else {
-            $resp['mensage'] = "Nickname ou e-mail já cadastrado anteriormente.";
+            $resp['mensage'] = "Erro ao cadastrar.";
           }
         }
       }else{

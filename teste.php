@@ -169,11 +169,11 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               $tmp['QtAnswers'] = (int)$regA->fetchObject()->QtAnswers;
             }elseif($tabela == 'PlanosDeAulaCategories'){
               $ObjTmp = new $tabela;
-              $sql = "SELECT count(SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1)) as acertos FROM `PlanosDeAulaQuestions` INNER JOIN `PlanosDeAula` ON `PlanosDeAula`.id = `PlanosDeAulaQuestions`.`idCategoryPlano` INNER JOIN `PlanosDeAulaCategories` ON `PlanosDeAulaCategories`.`id` = `PlanosDeAula`.`idCategories` WHERE SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1) IN (SELECT `Answer` FROM `PlanosDeAulaAnswers`) AND `PlanosDeAulaCategories`.`id` = $rs->id AND $filtro; ";
+              $sql = "SELECT count(SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1)) as acertos FROM `PlanosDeAulaQuestions` INNER JOIN `PlanosDeAula` ON `PlanosDeAula`.id = `PlanosDeAulaQuestions`.`idCategoryPlano` AND `PlanosDeAulaQuestions`.`Active`=true INNER JOIN `PlanosDeAulaCategories` ON `PlanosDeAulaCategories`.`id` = `PlanosDeAula`.`idCategories` WHERE SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1) IN (SELECT `Answer` FROM `PlanosDeAulaAnswers`) AND `PlanosDeAulaCategories`.`id` = $rs->id AND $filtro;";
               $regQ = $ObjTmp->query($sql);
               $tmp['acertos'] = (int)$regQ->fetchObject()->acertos;
 
-              $sql = "SELECT count(SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1)) as erros FROM `PlanosDeAulaQuestions` INNER JOIN `PlanosDeAula` ON `PlanosDeAula`.id = `PlanosDeAulaQuestions`.`idCategoryPlano` INNER JOIN `PlanosDeAulaCategories` ON `PlanosDeAulaCategories`.`id` = `PlanosDeAula`.`idCategories` WHERE SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1) NOT IN (SELECT `Answer` FROM `PlanosDeAulaAnswers` WHERE `Answer` IS NOT NULL) AND `PlanosDeAulaCategories`.`id` = $rs->id AND $filtro;";
+              $sql = "SELECT count(SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1)) as erros FROM `PlanosDeAulaQuestions` INNER JOIN `PlanosDeAula` ON `PlanosDeAula`.id = `PlanosDeAulaQuestions`.`idCategoryPlano` AND `PlanosDeAulaQuestions`.`Active`=true INNER JOIN `PlanosDeAulaCategories` ON `PlanosDeAulaCategories`.`id` = `PlanosDeAula`.`idCategories` WHERE SUBSTRING(`Answers`, 1, INSTR(`Answers`, ';') - 1) NOT IN (SELECT `Answer` FROM `PlanosDeAulaAnswers` WHERE `Answer` IS NOT NULL) AND `PlanosDeAulaCategories`.`id` = $rs->id AND $filtro;";
               $regA = $ObjAnswers->query($sql);
               $tmp['erros'] = (int)$regA->fetchObject()->erros;
               // ainda falta contemplar a tabela Options
@@ -310,7 +310,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
         case 'update':
           // 
           //popula variável com dados da SESSION
-          $resp = $UserSession;
+          $resp = [];//$UserSession;
           $ObjBd = new $tabela;
           if(isset($_POST['idUser']) && !in_array('idUser',$ObjBd->campos())) unset($_POST['idUser']);
           if($_POST){
@@ -330,11 +330,12 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
             */
             if(isset($_POST['isUser']) && $tabela == 'User') unset($_POST['isUser']);
             
-            $resp['mensage'] = ($ObjBd->atualizar($chave,$_POST) >0)? 'Dados atualizados com sucesso!' : 'erro ao atualizar.';
-            if($resp['mensage'] == 'Dados atualizados com sucesso!' && $tabela == 'User' && $chave){
+            $ok = ($ObjBd->atualizar($chave,$_POST) >0)? 'Dados atualizados com sucesso!' : 'erro ao atualizar.';
+            if($ok == 'Dados atualizados com sucesso!' && $tabela == 'User' && $chave){
               $_SESSION = $ObjBd->listarAtual($chave);
-              $resp = $_SESSION;
+              array_push($resp,$_SESSION);
             }
+            $resp['mensage'] = $ok;
           } else {
             $resp['mensage'] = "Erro ao atualizar.";
           }
@@ -445,13 +446,14 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           if ($tabela == 'User' && $rsAccess->AccessName == "Responsavel" || (isset($_POST['FamilyCode']) && $_POST['FamilyCode'] == 'true')){
             $_POST['FamilyCode'] = $ObjBd->GetFamilyCode();
           }
-          if ($qtd >0) {
+          if ($qtd > 0) {
             $resp['mensage'] = $msgErro;
-          } elseif ((int)$ObjBd->inserir($_POST) > 0) {
+          /* } elseif ((int)$ObjBd->inserir($_POST) > 0) {
             $resp['mensage'] = 'Cadastro realizado com sucesso.';
-            if (isset($_POST['FamilyCode'])) $resp['FamilyCode'] = $_POST['FamilyCode'];
+            if (isset($_POST['FamilyCode'])) $resp['FamilyCode'] = $_POST['FamilyCode']; */
           } else {
-            $resp['mensage'] = "Nickname ou e-mail já cadastrado anteriormente.";
+            //$resp['mensage'] = "Erro ao cadastrar.";
+            $resp = $_POST;
           }
         }
       }else{
