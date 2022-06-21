@@ -6,7 +6,7 @@ class User extends Tabela {
   protected $legendas = array();
 														 
  public function listarAtual($idLoginAtual){
- 	$resultado = $this->listar("`id` = '".$idLoginAtual."'");
+ 	$resultado = $this->consultar("`$this->tabela`.`id` = $idLoginAtual");
    $tmp = [];
    foreach ($resultado->fetchObject() as $key => $value) {
      $tmp[$key] = ($key == 'Password')? '***' : $value;

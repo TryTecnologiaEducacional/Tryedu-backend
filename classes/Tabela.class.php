@@ -142,8 +142,9 @@ abstract Class Tabela {
     $sql = "SELECT ".$this->tabela.".* FROM " . $this->tabela;
 
     //testar se existe campo "Active", caso positivo retornar somente true
-    if (in_array('Active',$this->campos()) && !in_array('Active',$filtro)) $active = $this->tabela.".Active = TRUE";
-    
+    $busca = 'Active';
+    if (in_array('Active',$this->campos()) && !is_null($active) && !preg_match("/{$busca}/",$filtro)) $active = " $this->tabela.Active = $active";
+
     // Se foi enviado filtro, concatena filtro
     if(is_null($filtro) && !is_null($active)) $sql .= " WHERE $active";
     if(is_null($active) && !is_null($filtro)) $sql .= " WHERE $filtro";
@@ -163,16 +164,16 @@ abstract Class Tabela {
 
   } // function listar só tabela
 
-//listar consulta - início
+//consultar consulta - início
 public function consultar($filtro=null, $ordem=null, $limite=null,$grupo=null,$active=null){
 
   // Monta consulta concatenando tabela
   switch ($this->tabela) {
     case 'User':
-      $sql = 'SELECT `User`.*,`Schools`.`SchoolName`,`Classt`.`ClassName`,`AccessLevel`.`AccessName`,`AccessLevel`.`AccessTitle` FROM `User`
+      $sql = "SELECT `User`.*,`Schools`.`SchoolName`,`Classt`.`ClassName`,`AccessLevel`.`AccessName`,`AccessLevel`.`AccessTitle` FROM `User`
       LEFT JOIN `Classt` ON `User`.`ClassCode` = `Classt`.`ClassCode`
       LEFT JOIN `Schools` ON `Classt`.`SchoolCode` = `Schools`.`SchoolCode`
-      LEFT JOIN `AccessLevel` ON `User`.`idAccessLevel` = `AccessLevel`.`id`';
+      LEFT JOIN `AccessLevel` ON `User`.`idAccessLevel` = `AccessLevel`.`id`";
       break;
     case 'Questions':
       $sql = "SELECT `Questions`.*,`Schools`.`SchoolName`, `Adventure`.`id` as idAdventure,`Adventure`.`Name` as `Adventure` FROM `Questions`
@@ -226,31 +227,30 @@ public function consultar($filtro=null, $ordem=null, $limite=null,$grupo=null,$a
       $sql = "SELECT ".$this->tabela.".* FROM " . $this->tabela;
     break;
   }
-  
-  // Se foi enviado filtro, concatena filtro
-  //if (!is_null($filtro)) {$sql .= " WHERE $filtro";}
-  
-  //testar se existe campo "Active", caso positivo retornar somente true
-  if (in_array('Active',$this->campos()) && !in_array('Active',$filtro)) $active = $this->tabela.".Active = TRUE";
-  
-  // Se foi enviado filtro, concatena filtro
-  if(is_null($filtro) && !is_null($active)) $sql .= " WHERE $active";
-  if(is_null($active) && !is_null($filtro)) $sql .= " WHERE $filtro";
-  if(!is_null($filtro) && !is_null($active)) $sql .= " WHERE $filtro AND $active";
+
+
+    //testar se existe campo "Active", caso positivo retornar somente true
+    $busca = 'Active';
+    if (in_array('Active',$this->campos()) && !is_null($active) && !preg_match("/{$busca}/",$filtro)) $active = " $this->tabela.Active = $active";
+        
+    // Se foi enviado filtro, concatena filtro
+    if(is_null($filtro) && !is_null($active)) $sql .= " WHERE $active";
+    if(is_null($active) && !is_null($filtro)) $sql .= " WHERE $filtro";
+    if(!is_null($filtro) && !is_null($active)) $sql .= " WHERE $filtro AND $active";
 
     // Se foi enviado ordem, concatena ordem
-  if (!is_null($grupo)){$sql .= " GROUP BY $grupo";}
-  
-  // Se foi enviado ordem, concatena ordem
-  if (!is_null($ordem)){$sql .= " ORDER BY $ordem";}
+    if (!is_null($grupo)){$sql .= " GROUP BY $grupo";}
+    
+    // Se foi enviado ordem, concatena ordem
+    if (!is_null($ordem)){$sql .= " ORDER BY $ordem";}
 
-  // Se foi enviado limite, concatena limite
-  if (!is_null($limite)){$sql .= " LIMIT $limite";}
+    // Se foi enviado limite, concatena limite
+    if (!is_null($limite)){$sql .= " LIMIT $limite";}
 
-  // Retorna objeto com o resultado encontrado
-  return $this->query($sql);
+    // Retorna objeto com o resultado encontrado
+    return $this->query($sql);
 
-}//listar consulta - término
+}//consultar consulta - término
 
 public function percentRespondidas($tabResposta, $filtro, $idUser){ // usar Obj tabela de perguntas
   $sql = "SELECT COUNT(*) as Qt FROM `$this->tabela`
@@ -275,9 +275,9 @@ public function percentRespondidas($tabResposta, $filtro, $idUser){ // usar Obj 
   public function listarPorChave($chave){
     if(!strpos(strtolower($this->tipoCampo($this->chavePrimaria)),'int') && !strpos($chave,"'")) $chave = "'$chave'";
     
-    $filtro = $this->tabela . '.' . $this->chavePrimaria . ' = ' . $chave;
+    $filtro = "$this->tabela.$this->chavePrimaria = $chave";
 
-    if (in_array('Active',$this->campos())) $filtro .= " AND (".$this->tabela.".Active = 1 OR ".$this->tabela.".Active = 0)";
+    //if (in_array('Active',$this->campos())) $filtro .= " AND (".$this->tabela.".Active = 1 OR ".$this->tabela.".Active = 0)";
     
     $resultado = $this->listar($filtro);
 
