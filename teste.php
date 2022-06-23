@@ -60,6 +60,11 @@ if (isset($_POST['Token'])) {
   unset($_POST['Token']);
 }
 echo "teste<hr>";
-$ObjBd = new User();
-$reg = $ObjBd->consultar("User.id = $chave");
-print_r($reg->fetchObject());
+$busca = 'int';
+$ObjBd = new PlanosDeAulaAnswers;
+$reg = $ObjBd->listar();
+$rs = $reg->fetchObject();
+foreach ($rs as $key => $value) {
+  $tmp = preg_match("/{$busca}/",$ObjBd->tipoCampo($key))? (int)$value : "'".$value."'";
+  echo "id: $key >>> $tmp<br>";
+}

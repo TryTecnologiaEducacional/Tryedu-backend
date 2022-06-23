@@ -153,9 +153,10 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           }
           $reg = $ObjBd->consultar($filtro, $ordem);
           $ObjAnswers = new $tabResposta;
+          $busca = 'int';
           while($rs = $reg->fetchObject()){
             foreach ($rs as $key => $value) {
-              $tmp[$key] = (strpos(strtolower($ObjBd->tipoCampo($key)),'int'))? (int)$value : $value;
+              $tmp[$key] = preg_match("/{$busca}/",$ObjBd->tipoCampo($key))? (int)$value : $value;
               if($key == 'DateRelease'){
                 $tmp['Bloqueada'] = ($value > date('Y-m-d'))? true : false;
               }
