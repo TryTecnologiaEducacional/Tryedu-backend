@@ -60,11 +60,8 @@ if (isset($_POST['Token'])) {
   unset($_POST['Token']);
 }
 echo "teste<hr>";
-$busca = 'int';
-$ObjBd = new PlanosDeAulaAnswers;
-$reg = $ObjBd->listar();
-$rs = $reg->fetchObject();
-foreach ($rs as $key => $value) {
-  $tmp = preg_match("/{$busca}/",$ObjBd->tipoCampo($key))? (int)$value : "'".$value."'";
-  echo "id: $key >>> $tmp<br>";
-}
+$score = '-10';
+$ObjBd = new User();
+$saldo = $ObjBd->ScoreUpdate(143,$score);
+echo "score = " . $score;
+echo "<br>Soma: " . $saldo;

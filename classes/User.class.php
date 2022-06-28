@@ -23,8 +23,8 @@ class User extends Tabela {
 
  public function ScoreUpdate($id,$score){//retorna Score atual
   $rs = $this->listarPorChave($id);
-  $dados['Score'] = ($rs->Score + (int)$score);
-  if($score >0) $ok = $this->atualizar($id,$dados);//se for =0 retorna score sem atualizar
+  $dados['Score'] = ((int)$rs->Score + (int)$score);
+  if($score !== 0) $ok = $this->atualizar($id,$dados);//se for =0 retorna score sem atualizar
   return $dados['Score'];
  }
 
