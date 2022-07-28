@@ -1,0 +1,4 @@
+2022-07-28 16:59:45 - <h1>Erro:</h1><pre>SQLSTATE[42S22]: Column not found: 1054 Unknown column 'License' in 'field list'
+#0 C:\Users\raphaelsantos.senai\Documents\Tryedu-backend\classes\Tabela.class.php(104): PDO->exec('UPDATE User set...')
+#1 C:\Users\raphaelsantos.senai\Documents\Tryedu-backend\MercadoPago.php(20): Tabela->query('UPDATE User set...')
+#2 {main}</pre>
