@@ -17,6 +17,7 @@ class User extends Tabela {
  public function logged($id,$dados){
   //$dados['Logged'] = $ZeroUm;
   //$dados['Token'] = $token;
+  $dados['DateTimeNow'] = date("Y-m-d H:i:s");
   $ok = ($this->atualizar($id,$dados)? 1 : 0);
   return $ok;
  }
