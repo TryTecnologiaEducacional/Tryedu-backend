@@ -9,12 +9,15 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 if (strstr($_SERVER['HTTP_HOST'], 'teste') ) {
   $bancoUser = 'teentok_teste';
+
   $raiz_site = '/usr/share/nginx/html/apiteste/';
   $UrlAPI = 'https://apiteste.teentok.com.br/';
+  $TokenApiMercadoPago = 'TEST-5287039911532953-071114-218fad1a905d77274b4438acc59b5fcb-1156288832';
 } else {
   $bancoUser = 'teentok_producao';
   $raiz_site = '/usr/share/nginx/html/api/';
   $UrlAPI = 'https://api.teentok.com.br/';
+  $TokenApiMercadoPago = 'APP_USR-5287039911532953-071114-716dfaa1bcae6efb5e8e0ee4429e570a-1156288832';
 }
 define('DRIVER', 'mysql'); // Servidor de Banco de Dados
 define('SERVIDOR', 'bduser.czpyv0z0unpu.sa-east-1.rds.amazonaws.com'); // Servidor de Banco de Dados
@@ -26,6 +29,7 @@ define('PORTABD', '3306');  // Porta de acesso
 define('OPCOES', array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => TRUE, PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4")); // Opções do Driver
 
 define('ArqLog', '_private/arquivo.log');
+define('TOKENAPIMERCADOPAGO', $TokenApiMercadoPago);  // Porta de acesso
 
 //define('raiz_site','/var/www/html/apiteste/');
 define('raiz_site', $raiz_site);
