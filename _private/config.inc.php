@@ -12,7 +12,7 @@ if (strstr($_SERVER['HTTP_HOST'], 'teste') ) {
 
   $raiz_site = '/usr/share/nginx/html/apiteste/';
   $UrlAPI = 'https://apiteste.teentok.com.br/';
-  $TokenApiMercadoPago = 'TEST-5287039911532953-071114-218fad1a905d77274b4438acc59b5fcb-1156288832';
+  $TokenApiMercadoPago = 'APP_USR-5287039911532953-071114-716dfaa1bcae6efb5e8e0ee4429e570a-1156288832';
 } else {
   $bancoUser = 'teentok_producao';
   $raiz_site = '/usr/share/nginx/html/api/';
