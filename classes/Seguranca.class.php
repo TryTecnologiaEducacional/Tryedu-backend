@@ -39,6 +39,18 @@ class Seguranca {
         $_SESSION[$key] = ($key == 'Logged')? 1 : $value;
         $_SESSION[$key] = ($key == 'Password')? '***' : $value;
       }
+
+      $_SESSION['Scores'] = '';
+      $ObjScores = new Scores();
+      //$sql = "SELECT * FROM `Scores` WHERE `idUser` = $idUser";
+      $rScore = $ObjScores->listar("`idUser` = $idUser");//$ObjScores->query($sql);
+      while ($rSS = $rScore->fetchObject()) {
+        if ($_SESSION['Scores'] != '') $_SESSION['Scores'] .= ",";
+        $_SESSION['Scores'] .= "[$rSS->ScoreType,$rSS->Score]";
+      }
+
+      $_SESSION['Scores'] = json_encode($_SESSION['Scores']);
+
       $_SESSION['horaemail'] = date('d/m/Y H:i');
       $_SESSION['Token'] = bin2hex(openssl_random_pseudo_bytes(32));
 
