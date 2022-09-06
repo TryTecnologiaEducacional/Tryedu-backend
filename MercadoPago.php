@@ -26,13 +26,22 @@ $sql = "INSERT INTO LogsGeneral (content,type,idUser) values ('$jsonInsert','JSO
 $ObjBd->query($sql);
 
 echo $dataNotificacao->resource;
+$carregarJsonPagto = false;
 
 if ($dataNotificacao->topic == "payment")
 {
-
-
-
   $json = file_get_contents($dataNotificacao->resource."?access_token=".TOKENAPIMERCADOPAGO);
+  $carregarJsonPagto = true;
+}
+elseif ($dataNotificacao->action == "payment.updated")
+{
+  $json = file_get_contents("https://api.mercadolibre.com/collections/notifications/".$dataNotificacao->data->id."?access_token=".TOKENAPIMERCADOPAGO);
+  $carregarJsonPagto = true;
+}
+
+
+if   ($carregarJsonPagto == true)
+{
   $data = json_decode($json);
 
 

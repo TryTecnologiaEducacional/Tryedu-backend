@@ -404,6 +404,21 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
       }
       break;
     
+    
+      case 'criarCodigoUsuario':
+        $sucesso = $ObjBd->CriarCodigoValidacao();
+        $arrRetorno = array('criado' => $sucesso[0],'mensagem'=>$sucesso[1]);
+        $resp = json_encode($arrRetorno);
+      break;
+
+    case 'validarCodigoUsuario':
+        
+        $sucesso = $ObjBd->ValidarCodigo();
+        $arrRetorno = array('ativado' => $sucesso[0],'mensagem'=>$sucesso[1]);
+        $resp = json_encode($arrRetorno);
+      break;
+
+
     case 'deslogar':
       array_push($resp, ['mensage' => 'Este usuário não está logado. Sucesso']);
       break;
@@ -468,7 +483,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
       $dados['Logged'] = 0;
       $dados['Token'] = null;
       $ok = $tabUser->logged($idUser, $dados);
-      $resp['mensage'] = "erro - não logado, desconectado. ($ok)";
+      $resp['mensage'] = "erro - não logado, desconectado. ($ok)\n". json_encode($_POST);
       break;
   }
 }
