@@ -198,8 +198,24 @@ public function consultar($filtro=null, $ordem=null, $limite=null,$grupo=null,$a
       INNER JOIN `User` ON `User`.`id` = `Answers`.`idUser`";
       break;
     case 'JourneysCategories':
-      $sql = "SELECT `JourneysCategories`.*,`Journeys`.`JourneyName` FROM `JourneysCategories`
-      INNER JOIN `Journeys` ON `JourneysCategories`.`idJourneys` = `Journeys`.`id`";
+      /* $sql = "SELECT `JourneysCategories`.*,`Journeys`.`JourneyName` FROM `JourneysCategories`
+      INNER JOIN `Journeys` ON `JourneysCategories`.`idJourneys` = `Journeys`.`id`"; */
+
+      //exibir soma de Scores das respostas por categoria
+      $sql = "SELECT `JourneysCategories`.*, if(SUM(Scores.Score),SUM(Scores.Score),0) as Score FROM `JourneysCategories`
+      LEFT JOIN JourneysQuestions ON JourneysCategories.id = JourneysQuestions.idCategoryPlano 
+      LEFT JOIN JourneysAnswers ON JourneysAnswers.idQuestions = JourneysQuestions.id
+      LEFT JOIN User ON User.id = JourneysAnswers.idUser
+      LEFT JOIN Scores ON Scores.idUser = User.id AND Scores.ScoreType = 'Score' 
+      GROUP BY JourneysCategories.CategoryName";
+      if ($grupo){
+        $sql .= ", $grupo";
+        $grupo = null;
+      }
+      if ($filtro) {
+        $sql .= " HAVING $filtro";
+        $filtro = null;
+      }
       break;
     case 'JourneysQuestions':
       $sql = "SELECT `JourneysQuestions`.*, `JourneysCategories`.`CategoryName`, `Journeys`.`JourneyName` FROM `JourneysQuestions` INNER JOIN `JourneysCategories` ON `JourneysQuestions`.`idCategoryPlano` = `JourneysCategories`.`id` INNER JOIN `Journeys` ON `JourneysCategories`.`idJourneys` = `Journeys`.`id`";
