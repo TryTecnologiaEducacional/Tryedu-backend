@@ -15,6 +15,7 @@ if(isset($_POST['chave'])){
 $tabela = $_POST['t']; unset($_POST['t']);
 
 $acao = $_POST['a']; unset($_POST['a']);
+$grupo = (isset($_POST['grupo']))? $_POST['grupo'] : null;
 
 if(isset($_POST['filtro'])){
   $filtro = $_POST['filtro'];
@@ -234,7 +235,7 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
           if ($f == 'UserTags'){
             $sql = "SELECT `idUser`,`NameTags` FROM `HistoryDialoguesAnswers` WHERE idUser = $idUser GROUP BY `idUser`,`NameTags`";
             $reg = $ObjBd->query($sql);
-          } else $reg = $ObjBd->consultar($f);
+          } else $reg = $ObjBd->consultar($f,$ordem,null,$grupo);
 
           $tmp = array();
           while($rs = $reg->fetchObject()){
@@ -243,6 +244,25 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
               if($key == 'DateRelease') {
                 $tmp['Bloqueada'] = ($value > date('Y-m-d'))? true : false;
               }
+            }
+            array_push($resp,$tmp);
+          }
+          $msg = ($resp)? 'retorno sucesso' : "Nenhum registro encontrado" ;
+          array_push($resp,['mensage' => $msg]);
+          break;
+        case 'ScoreSum': //retorna consulta com soma de Score por usuário
+          $sql = "SELECT JourneysCategories.CategoryName, `JourneysAnswers`.`idUser`,SUM(`JourneysAnswers`.`Score`) as Score FROM `JourneysAnswers`
+          INNER JOIN JourneysQuestions ON JourneysQuestions.id = JourneysAnswers.idQuestions
+          INNER JOIN JourneysCategories ON JourneysCategories.id= JourneysQuestions.idCategoryPlano
+          GROUP BY JourneysCategories.CategoryName,JourneysAnswers.idUser";
+          if($filtro) $sql .= " HAVING $filtro";
+          $resp = array();
+          $ObjBd = new $tabela;
+          $reg = $ObjBd->query($sql);
+          $tmp = array();
+          while($rs = $reg->fetchObject()){
+            foreach ($rs as $key => $value) {
+              $tmp[$key] = $value;
             }
             array_push($resp,$tmp);
           }

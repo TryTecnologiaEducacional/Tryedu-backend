@@ -239,10 +239,10 @@ public function consultar($filtro=null, $ordem=null, $limite=null,$grupo=null,$a
     case 'HistoryDialoguesAnswers':
       $sql = "SELECT `HistoryDialoguesAnswers`.*, `HistoryDialoguesOptions`.`idDialogues`, `HistoryDialoguesOptions`.`NameTags`, `HistoryDialoguesOptions`.`Expression`, `HistoryDialoguesOptions`.`Order` FROM `HistoryDialoguesAnswers` LEFT JOIN `HistoryDialoguesOptions` ON `HistoryDialoguesOptions`.`id` = `HistoryDialoguesAnswers`.`idOptions`";
       break;
-      case 'HistoryEpisodes':
-        $sql = "SELECT `HistoryEpisodes`.*, `HistoryStatus`.`id`, `HistoryStatus`.`idUser`,`HistoryStatus`.`Score`, `HistoryStatus`.`EpisodeStatus`
-         FROM `HistoryEpisodes` INNER JOIN `HistoryStatus` ON `HistoryEpisodes`.`id` = `HistoryStatus`.`idEpisodes`";
-        break;
+    case 'HistoryEpisodes':
+      $sql = "SELECT `HistoryEpisodes`.*, `HistoryStatus`.`id`, `HistoryStatus`.`idUser`,`HistoryStatus`.`Score`, `HistoryStatus`.`EpisodeStatus`
+        FROM `HistoryEpisodes` INNER JOIN `HistoryStatus` ON `HistoryEpisodes`.`id` = `HistoryStatus`.`idEpisodes`";
+      break;
     default:
       $sql = "SELECT ".$this->tabela.".* FROM " . $this->tabela;
     break;
