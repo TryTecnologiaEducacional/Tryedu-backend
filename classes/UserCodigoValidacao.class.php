@@ -26,11 +26,11 @@ $sql = "INSERT INTO `teentok_teste`.`UserCodigoValidacao` ( `email`, `codigo`, `
 $this->query($sql);
 $arr = array('true','Código gerado e enviado com sucesso.'.$codigo);
 
-$sender = 'fernando@aspbrasil.net';
-$senderName = 'Fernando Dangelo';
+$sender = 'contato@tryedu.com.br';
+$senderName = 'Contato Tryedu';
 
-$usernameSmtp = 'fernando@aspbrasil.net';
-$passwordSmtp = 'oDnanref#22';
+$usernameSmtp = 'contato@tryedu.com.br';
+$passwordSmtp = 'Bundinha1*';
 $configurationSet = 'ConfigSet';
 $host = 'smtp.gmail.com';
 $port = 587;
