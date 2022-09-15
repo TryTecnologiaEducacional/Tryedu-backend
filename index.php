@@ -437,7 +437,8 @@ if (($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCo
         $arrRetorno = array('criado' => $sucesso[0], 'mensagem' => $sucesso[1]);
         $resp = json_encode($arrRetorno);
       } else {
-        $resp = json_encode($usuarioExistente);
+        $arrRetorno = array('criado' => $usuarioExistente[0], 'mensagem' => $usuarioExistente[1]);
+        $resp = json_encode($arrRetorno);
       }
       break;
 
