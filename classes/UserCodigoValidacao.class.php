@@ -13,16 +13,34 @@ class UserCodigoValidacao extends Tabela
   protected $legendas = array();
 
 
+
+  public function validarEmail()
+  {
+    $email = $_POST['email'];
+    $nick = $_POST['nick'];
+    $sql = "SELECT * FROM `teentok_teste`.`User` WHERE Email = '$email' OR  Nickname = $nick";
+    $retorno = $this->query($sql);
+    $count = $retorno->rowCount();
+
+    if ($count > 0) {
+      $arr = array('false', 'Nick ou e-mail já existente');
+    } else {
+      $arr = array('true', 'Cadastro possível');
+    }
+    return $arr;
+  }
+
   public function CriarCodigoValidacao()
   {
 
     $email = $_POST['email'];
-    unset($_POST['email']);
+    //unset($_POST['email']);
     $codigo = rand(1000, 9999);
     $minutes_to_add = 5;
     $data = new DateTime();
     $data->add(new DateInterval('PT' . $minutes_to_add . 'M'));
     $dataStamp = $data->format("Y-m-d H:i:s");
+
 
     $sql = "INSERT INTO `teentok_teste`.`UserCodigoValidacao` ( `email`, `codigo`, `dataValidade`, `ativado`, `metodoValidacao`) VALUES ('$email', '$codigo', '$dataStamp', false, 'email');";
     $this->query($sql);

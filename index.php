@@ -426,9 +426,14 @@ if(($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCon
     
     
       case 'criarCodigoUsuario':
-        $sucesso = $ObjBd->CriarCodigoValidacao();
-        $arrRetorno = array('criado' => $sucesso[0],'mensagem'=>$sucesso[1]);
-        $resp = json_encode($arrRetorno);
+        $usuarioExistente = $ObjBd->validarEmail();
+        if($usuarioExistente[0] == 'true'){
+          $sucesso = $ObjBd->CriarCodigoValidacao();
+          $arrRetorno = array('criado' => $sucesso[0],'mensagem'=>$sucesso[1]);
+          $resp = json_encode($arrRetorno);
+        }else{
+          return $usuarioExistente;
+        }
       break;
 
     case 'validarCodigoUsuario':
@@ -515,4 +520,3 @@ if (is_null($resp) && is_null($UserSession)) {
 } else {
   echo json_encode($retorno, JSON_UNESCAPED_UNICODE);
 }
-?>
