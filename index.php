@@ -256,6 +256,24 @@ if (($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCo
         $msg = ($resp) ? 'retorno sucesso' : "Nenhum registro encontrado";
         array_push($resp, ['mensage' => $msg]);
         break;
+
+      case 'ConsultarUserImages':
+        
+        
+        $retorno = array();
+        $ObjBd = new $tabela;
+        $idUser = $_POST['idUser'];
+    
+        $imagensUsuario = $ObjBd->ConsultarImagesUser($idUser);
+               
+        array_push($resp, $imagensUsuario);
+      
+        $msg = ($resp) ? 'retorno sucesso' : "Nenhum registro encontrado";
+        array_push($resp, ['mensage' => $msg]);
+        
+        
+        break;
+
       case 'ScoreSum': //retorna consulta com soma de Score por usuário
         $sql = "SELECT JourneysCategories.CategoryName, `JourneysAnswers`.`idUser`,SUM(`JourneysAnswers`.`Score`) as Score FROM `JourneysAnswers`
           INNER JOIN JourneysQuestions ON JourneysQuestions.id = JourneysAnswers.idQuestions
