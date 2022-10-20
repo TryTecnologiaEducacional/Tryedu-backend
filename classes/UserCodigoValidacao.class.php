@@ -3,6 +3,10 @@
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
 
+require 'awsSdk/aws-autoloader.php';
+
+use Aws\Ses\SesClient;
+use Aws\Exception\AwsException;
 
 
 class UserCodigoValidacao extends Tabela
@@ -46,62 +50,70 @@ class UserCodigoValidacao extends Tabela
     $this->query($sql);
     $arr = array('true', 'Código gerado e enviado com sucesso.' . $codigo);
 
-    $sender = 'contato@tryedu.com.br';
+
+    $SesClient = new SesClient([
+      'profile' => 'default',
+      'version' => '2010-12-01',
+      'region'  => 'us-east-1'
+    ]);
+
+    $char_set = 'UTF-8';
+
+    $sender = 'app@tryedu.app.br';
     $senderName = 'Contato Tryedu';
 
-    $usernameSmtp = 'contato@tryedu.com.br';
-    $passwordSmtp = 'Bundinha1*';
-    $configurationSet = 'ConfigSet';
-    $host = 'smtp.gmail.com';
-    $port = 465;
-
-    $cabecalho = '<html>
-<head>
-  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-  <title>Validação de e-mail</title>
-</head>
-<body>';
+    $cabecalho = '<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"><title>Validação de e-mail</title>
+</head><body>';
     $rodape = '</body></html>';
 
-    require './mailer/PHPMailerAutoload.php';
-
-    $to = $email;
+    $to =  [$email, $email];
     $subject = 'Cadastro TryEdu';
     $conteudo = '<p>Ol&#225;, seja bem-vindo a Tryedu. Este &#233; seu c&#243;digo de verifica&#231;&#227;o de email: ' . $codigo . ' Nós protegemos você e seus dados, caso tenha alguma dúvida, pode acessar nossa política de privacidade: <a href="https://tryedu.com.br/politica-de-privacidade">https://tryedu.com.br/politica-de-privacidade</a></p>';
     // $conteudo .= '<p>Para mais informações sobre o jogo basta acessar nosso site: <a href="http://umaaventuranaescola.com.br/">http://umaaventuranaescola.com.br/</a></p>';
     // $conteudo .= '<p>Nos não enviamos anúncios, você não receberá e-mail de publicidade.</p>';
     $message = $cabecalho . $conteudo . $rodape;
+    $plaintext_body = 'Olá, seja bem-vindo a Tryedu. Este é seu código de verificação de email: ' . $codigo . ' Nós protegemos você e seus dados, caso tenha alguma dúvida, pode acessar nossa política de privacidade: https://tryedu.com.br/politica-de-privacidade"';
 
-    $mail = new PHPMailer;
+    try {
+      $result = $SesClient->sendEmail([
+          'Destination' => [
+              'ToAddresses' => $to,
+          ],
+          'ReplyToAddresses' => [$sender],
+          'Source' => $sender,
+          'Message' => [
+            'Body' => [
+                'Html' => [
+                    'Charset' => $char_set,
+                    'Data' => $message,
+                ],              
+                'Text' => [
+                  'Charset' => $char_set,
+                  'Data' => $plaintext_body,
+              ],
+            ],
+            'Subject' => [
+                'Charset' => $char_set,
+                'Data' => $subject,
+            ],
+          ],
+          // If you aren't using a configuration set, comment or delete the
+          // following line
+          //'ConfigurationSetName' => $configuration_set,
+      ]);
+      
+      $messageId = $result['MessageId'];
+      //echo("Email sent! Message ID: $messageId"."\n");
 
-    //Tell PHPMailer to use SMTP
-    $mail->isSMTP();
-
-    //Enable SMTP debugging
-    // 0 = off (for production use)
-    // 1 = client messages
-    // 2 = client and server messages
-    $mail->SMTPDebug = 0;
-    $mail->Debugoutput = 'html';
-    $mail->IsHTML(true);
-    $mail->Host = $host;
-    $mail->Port = $port;
-    $mail->SMTPSecure = 'ssl';
-    $mail->SMTPAuth = true;
-    $mail->Username = $usernameSmtp;
-    $mail->Password = $passwordSmtp;
-    $mail->setFrom($sender, $senderName);
-    $mail->addAddress($to, $to);
-    $mail->Subject = $subject;
-    $mail->Body = $message;
-
-    if (!$mail->send()) {
-      // echo 'Message could not be sent.';
-      // echo 'Mailer Error: ' . $mail->ErrorInfo;
+  } catch (AwsException $e) {
+      // output error message if fails
+      echo $e->getMessage();
+      echo("The email was not sent. Error message: ".$e->getAwsErrorMessage()."\n");
+      echo "\n";
       $arr = array('false', 'Erro no envio do email.');
-    } else {
-      // echo 'Message has been sent';
-    }
+  }
+
+    
 
     return $arr;
     //DISPARAR EMAIL

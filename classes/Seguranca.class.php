@@ -86,7 +86,9 @@ class Seguranca {
   static public function estaConectado($idUser) {
 
     // inicia ou conecta-se a uma sessão
-    session_start();
+    if(!isset($_SESSION)) {
+      session_start();
+   }
 
     $tabUser = new User();
     $rs = $tabUser->listarPorChave($idUser);

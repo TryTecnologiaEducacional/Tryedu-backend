@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+//error_reporting(E_ALL);
+
 session_start();
 
 include_once('_private/config.inc.php');
@@ -262,7 +266,7 @@ if (($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCo
         
         $retorno = array();
         $ObjBd = new $tabela;
-        $idUser = $_POST['idUser'];
+        unset($_POST['idUser']);
     
         $imagensUsuario = $ObjBd->ConsultarImagesUser($idUser);
                
@@ -273,6 +277,30 @@ if (($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCo
         
         
         break;
+
+        case 'ComprarUserImages':
+        
+        
+          $retorno = array();
+          $ObjBd = new $tabela;
+
+          $idImage = (isset($_POST['idImage'])) ? $_POST['idImage'] : null;
+          //echo $idImage ."ddd";
+
+          unset($_POST['idUser']);
+          unset($_POST['idImage']);
+      
+          $imagensUsuario = $ObjBd->ComprarImagesUser($idUser,$idImage);
+          //echo $imagensUsuario ."eee";
+          array_push($resp, $imagensUsuario);
+        
+          $msg = ($resp) ? 'retorno sucesso' : "Nenhum registro encontrado";
+          array_push($resp, ['mensage' => $msg]);
+          
+          
+          break;
+
+
 
       case 'ScoreSum': //retorna consulta com soma de Score por usuário
         $sql = "SELECT JourneysCategories.CategoryName, `JourneysAnswers`.`idUser`,SUM(`JourneysAnswers`.`Score`) as Score FROM `JourneysAnswers`

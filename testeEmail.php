@@ -3,80 +3,78 @@
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
 
-require 'mailer/PHPMailerAutoload.php';
 
+require 'awsSdk/aws-autoloader.php';
 
+use Aws\Ses\SesClient;
+use Aws\Exception\AwsException;
 
-//Create a new PHPMailer instance
-$mail = new PHPMailer;
+// Create an SesClient. Change the value of the region parameter if you're 
+// using an AWS Region other than US West (Oregon). Change the value of the
+// profile parameter if you want to use a profile in your credentials file
+// other than the default.
+$SesClient = new SesClient([
+    'profile' => 'default',
+    'version' => '2010-12-01',
+    'region'  => 'us-east-1'
+]);
 
-//Tell PHPMailer to use SMTP
-$mail->isSMTP();
+// Replace sender@example.com with your "From" address.
+// This address must be verified with Amazon SES.
+$sender_email = 'fernando@tryedu.app.br';
 
-//Enable SMTP debugging
-// 0 = off (for production use)
-// 1 = client messages
-// 2 = client and server messages
-$mail->SMTPDebug = 0;
+// Replace these sample addresses with the addresses of your recipients. If
+// your account is still in the sandbox, these addresses must be verified.
+$recipient_emails = ['app@tryedu.app.br','app@tryedu.app.br'];
 
-//Ask for HTML-friendly debug output
-$mail->Debugoutput = 'html';
+// Specify a configuration set. If you do not want to use a configuration
+// set, comment the following variable, and the
+// 'ConfigurationSetName' => $configuration_set argument below.
 
-//Set the hostname of the mail server
-$mail->Host = 'smtp.gmail.com';
-// use
-// $mail->Host = gethostbyname('smtp.gmail.com');
-// if your network does not support SMTP over IPv6
+//$configuration_set = 'ConfigSet';
 
-//Set the SMTP port number - 587 for authenticated TLS, a.k.a. RFC4409 SMTP submission
-$mail->Port = 587;
+$subject = 'Amazon SES test (AWS SDK for PHP)';
+$plaintext_body = 'This email was sent with Amazon SES using the AWS SDK for PHP.' ;
+$html_body =  '<h1>AWS Amazon Simple Email Service Test Email</h1>'.
+              '<p>This email was sent with <a href="https://aws.amazon.com/ses/">'.
+              'Amazon SES</a> using the <a href="https://aws.amazon.com/sdk-for-php/">'.
+              'AWS SDK for PHP</a>.</p>';
+$char_set = 'UTF-8';
 
-//Set the encryption system to use - ssl (deprecated) or tls
-$mail->SMTPSecure = 'tls';
-
-//Whether to use SMTP authentication
-$mail->SMTPAuth = true;
-
-//Username to use for SMTP authentication - use full email address for gmail
-$mail->Username = "fernando@aspbrasil.net";
-
-//Password to use for SMTP authentication
-$mail->Password = "oDnanref#22";
-
-//Set who the message is to be sent from
-$mail->setFrom('from@example.com', 'First Last');
-
-//Set an alternative reply-to address
-$mail->addReplyTo('replyto@example.com', 'First Last');
-
-//Set who the message is to be sent to
-$mail->addAddress('fernando@aspbrasil.net', 'Woods');
-
-//Set the subject line
-$mail->Subject = 'PHPMailer GMail SMTP test';
-
-$mail->Body = "teste. clique aqui para ativar";
-//Read an HTML message body from an external file, convert referenced images to embedded,
-//convert HTML into a basic plain-text alternative body
-//$mail->msgHTML(file_get_contents('contents.html'), dirname(__FILE__));
-
-//Replace the plain text body with one created manually
-$mail->AltBody = 'This is a plain-text message body';
-
-//Attach an image file
-//$mail->addAttachment('images/phpmailer_mini.png');
-
-//send the message, check for errors
-if (!$mail->send()) {
-    echo 'Message could not be sent.';
-    echo 'Mailer Error: ' . $mail->ErrorInfo;
-} else {
-    echo 'Message has been sent';
-    //Section 2: IMAP
-    //Uncomment these to save your message in the 'Sent Mail' folder.
-    #if (save_mail($mail)) {
-    #    echo "Message saved!";
-    #}
+try {
+    $result = $SesClient->sendEmail([
+        'Destination' => [
+            'ToAddresses' => $recipient_emails,
+        ],
+        'ReplyToAddresses' => [$sender_email],
+        'Source' => $sender_email,
+        'Message' => [
+          'Body' => [
+              'Html' => [
+                  'Charset' => $char_set,
+                  'Data' => $html_body,
+              ],
+              'Text' => [
+                  'Charset' => $char_set,
+                  'Data' => $plaintext_body,
+              ],
+          ],
+          'Subject' => [
+              'Charset' => $char_set,
+              'Data' => $subject,
+          ],
+        ],
+        // If you aren't using a configuration set, comment or delete the
+        // following line
+        //'ConfigurationSetName' => $configuration_set,
+    ]);
+    $messageId = $result['MessageId'];
+    echo("Email sent! Message ID: $messageId"."\n");
+} catch (AwsException $e) {
+    // output error message if fails
+    echo $e->getMessage();
+    echo("The email was not sent. Error message: ".$e->getAwsErrorMessage()."\n");
+    echo "\n";
 }
 
 

@@ -12,21 +12,24 @@ class UserImages extends Tabela
 
 
 
-public function ComprarImages()
+public function ComprarImagesUser(int $idUser, int $idImage)
   {
+ 
+    $sql = "SELECT * FROM `teentok_teste`.`UserImages` WHERE UserImages.idImage = $idImage and idUser = $idUser;";
+    $retorno = $this->query($sql);
+    $count = $retorno->rowCount();
 
-    $email = $_POST['email'];
-    //unset($_POST['email']);
-    $codigo = rand(1000, 9999);
-    $minutes_to_add = 5;
-    $data = new DateTime();
-    $data->add(new DateInterval('PT' . $minutes_to_add . 'M'));
-    $dataStamp = $data->format("Y-m-d H:i:s");
-
-
-    $sql = "INSERT INTO `teentok_teste`.`UserCodigoValidacao` ( `email`, `codigo`, `dataValidade`, `ativado`, `metodoValidacao`) VALUES ('$email', '$codigo', '$dataStamp', false, 'email');";
-    $this->query($sql);
-    $arr = array('true', 'Código gerado e enviado com sucesso.' . $codigo);
+    if ($count == 0) 
+    {
+      $sql = "INSERT INTO `teentok_teste`.`UserImages` ( `idUser`, `idImage`) VALUES ($idUser, $idImage);";
+      $this->query($sql);
+      $arr = array('true', 'Imagem comprada com sucesso.');
+    }
+    else
+    {
+      $arr = array('false', 'Houve um problema ao comprar a imagem. Verifique se o usuário já não possui a imagem desejada.');
+    }
+      return $arr;
   }
 
 
@@ -34,7 +37,7 @@ public function ComprarImages()
   public function ConsultarImagesUser(int $idUser)
   {
 
-    $sql = "SELECT * FROM `UserImages` WHERE idUser = $idUser";
+    $sql = "SELECT * FROM UserImages inner join ImagePerfil on UserImages.idImage = ImagePerfil.id where idUser = $idUser";
   
     $retorno = $this->query($sql);
     $count = $retorno->rowCount();

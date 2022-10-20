@@ -7,7 +7,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: HEAD, GET, POST, PUT, PATCH, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-if (strstr($_SERVER['HTTP_HOST'], 'teste') ) {
+if (strstr($_SERVER['HTTP_HOST'], 'teste') || strstr($_SERVER['HTTP_HOST'], 'localhost')) {
   $bancoUser = 'teentok_teste';
 
   $raiz_site = '/usr/share/nginx/html/apiteste/';
@@ -45,5 +45,8 @@ define('UrlAPI', $UrlAPI);
 
 // Função autoload para carga automática de Classes
 spl_autoload_register(function ($classe) {
-  include_once("classes/{$classe}.class.php");
+  if (file_exists("classes/{$classe}.class.php"))
+  {
+    include_once("classes/{$classe}.class.php");
+  }
 });
