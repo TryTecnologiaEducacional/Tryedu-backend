@@ -23,13 +23,14 @@ class UserCodigoValidacao extends Tabela
     $email = $_POST['email'];
     $nick = $_POST['nick'];
     $sql = "SELECT * FROM `teentok_teste`.`User` WHERE Email = '$email' OR  Nickname = '$nick'";
+   
     $retorno = $this->query($sql);
     $count = $retorno->rowCount();
 
     if ($count > 0) {
-      $arr = array('false', 'Nick ou e-mail já existente');
+      $arr = array('false', 'Nick ou e-mail já existente', $sql);
     } else {
-      $arr = array('true', 'Cadastro possível');
+      $arr = array('true', 'Cadastro possível', $sql);
     }
     return $arr;
   }
@@ -66,9 +67,10 @@ class UserCodigoValidacao extends Tabela
 </head><body>';
     $rodape = '</body></html>';
 
-    $to =  [$email, $email];
+    //$to =  [$email, $email];
+    $to = ['codigo@tryedu.app.br', 'codigo@tryedu.app.br'];
     $subject = 'Cadastro TryEdu';
-    $conteudo = '<p>Ol&#225;, seja bem-vindo a Tryedu. Este &#233; seu c&#243;digo de verifica&#231;&#227;o de email: ' . $codigo . ' Nós protegemos você e seus dados, caso tenha alguma dúvida, pode acessar nossa política de privacidade: <a href="https://tryedu.com.br/politica-de-privacidade">https://tryedu.com.br/politica-de-privacidade</a></p>';
+    $conteudo = '<p>Ol&#225;, seja bem-vindo a Tryedu. Este &#233; seu c&#243;digo de verifica&#231;&#227;o de email ' .$email . ': ' . $codigo . ' Nós protegemos você e seus dados, caso tenha alguma dúvida, pode acessar nossa política de privacidade: <a href="https://tryedu.com.br/politica-de-privacidade">https://tryedu.com.br/politica-de-privacidade</a></p>';
     // $conteudo .= '<p>Para mais informações sobre o jogo basta acessar nosso site: <a href="http://umaaventuranaescola.com.br/">http://umaaventuranaescola.com.br/</a></p>';
     // $conteudo .= '<p>Nos não enviamos anúncios, você não receberá e-mail de publicidade.</p>';
     $message = $cabecalho . $conteudo . $rodape;
@@ -140,7 +142,7 @@ class UserCodigoValidacao extends Tabela
     if ($count == 1) {
       $sql = "UPDATE `UserCodigoValidacao` SET `ativado` = true WHERE `email` = '$email'";
       $this->query($sql);
-      $arr = array('true', 'Código Validado com Sucesso!');
+      $arr = array('true', 'Código Validado com sucesso!');
     }
     return $arr;
   }

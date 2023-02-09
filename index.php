@@ -1,7 +1,7 @@
 <?php
 ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
-//error_reporting(E_ALL);
+error_reporting(E_ALL);
 
 session_start();
 
@@ -477,21 +477,25 @@ if (($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCo
 
 
     case 'criarCodigoUsuario':
-      $usuarioExistente = $ObjBd->validarEmail();
-      if ($usuarioExistente[0] == 'true') {
+      $usuarioInexistente = $ObjBd->validarEmail();
+      if ($usuarioInexistente[0] == 'true') {
         $sucesso = $ObjBd->CriarCodigoValidacao();
-        $arrRetorno = array('criado' => $sucesso[0], 'mensagem' => $sucesso[1]);
-        $resp = json_encode($arrRetorno);
+        //$arrRetorno = array('criado' => $sucesso[0], 'mensage' => $sucesso[1]);
+        //$resp = json_encode($arrRetorno);
+        $resp['mensage'] = $sucesso[1];
+        $resp['criado'] = $sucesso[0];
+        
       } else {
-        $arrRetorno = array('criado' => $usuarioExistente[0], 'mensagem' => $usuarioExistente[1]);
-        $resp = json_encode($arrRetorno);
+        //$arrRetorno = array('criado' => $usuarioExistente[0], 'mensage' => $usuarioExistente[1]);
+        //$resp = json_encode($arrRetorno);
+        $resp['mensage'] = "Nick e/ou E-Mail existente no sistema.";
       }
       break;
 
     case 'validarCodigoUsuario':
 
       $sucesso = $ObjBd->ValidarCodigo();
-      $arrRetorno = array('ativado' => $sucesso[0], 'mensagem' => $sucesso[1]);
+      $arrRetorno = array('ativado' => $sucesso[0], 'mensage' => $sucesso[1]);
       $resp = json_encode($arrRetorno);
       break;
 
@@ -509,6 +513,9 @@ if (($idUser > 0 && $acao <> 'login' && $acao <> 'register' && Seguranca::estaCo
         if (isset($_POST['FamilyCode']) && ($_POST['FamilyCode'] == 'undefined' || is_null($_POST['FamilyCode']))) unset($_POST['FamilyCode']);
         switch ($tabela) {
           case 'User':
+            $_POST['Name'] = null;
+            unset($_POST['Name']);//Esse campo não existe no BD
+           
             $filtro = "$tabela.NickName = '" . $_POST['NickName'] . "' OR $tabela.Email = '" . $_POST['Email'] . "'";
             $msgErro = "Usuário já cadastrado anteiormente.";
             break;

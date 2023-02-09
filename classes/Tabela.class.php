@@ -412,6 +412,7 @@ public function percentRespondidas($tabResposta, $filtro, $idUser){ // usar Obj 
     $sql .= substr($campos,0,-1) . ") VALUES ";
     $sql .= substr($valores,0,-1);
 
+    //echo $sql;
     // Total de registros inseridos (0 ou quantidade ok)
     return $this->query($sql);
 
