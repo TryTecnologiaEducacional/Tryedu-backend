@@ -15,13 +15,13 @@ class UserImages extends Tabela
 public function ComprarImagesUser(int $idUser, int $idImage)
   {
  
-    $sql = "SELECT * FROM `teentok_teste`.`UserImages` WHERE UserImages.idImage = $idImage and idUser = $idUser;";
+    $sql = "SELECT * FROM `UserImages` WHERE UserImages.idImage = $idImage and idUser = $idUser;";
     $retorno = $this->query($sql);
     $count = $retorno->rowCount();
 
     if ($count == 0) 
     {
-      $sql = "INSERT INTO `teentok_teste`.`UserImages` ( `idUser`, `idImage`) VALUES ($idUser, $idImage);";
+      $sql = "INSERT INTO `UserImages` ( `idUser`, `idImage`) VALUES ($idUser, $idImage);";
       $this->query($sql);
       $arr = array('true', 'Imagem comprada com sucesso.');
     }

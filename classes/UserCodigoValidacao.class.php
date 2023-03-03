@@ -22,7 +22,7 @@ class UserCodigoValidacao extends Tabela
   {
     $email = $_POST['email'];
     $nick = $_POST['nick'];
-    $sql = "SELECT * FROM `teentok_teste`.`User` WHERE Email = '$email' OR  Nickname = '$nick'";
+    $sql = "SELECT * FROM `User` WHERE Email = '$email' OR  Nickname = '$nick'";
    
     $retorno = $this->query($sql);
     $count = $retorno->rowCount();
